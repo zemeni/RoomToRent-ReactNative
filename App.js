@@ -1,20 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
+import {View, Text} from "react-native";
+import {style} from "./App.style";
+import {Logo} from "./components/logo/logo";
+import {Navbar} from "./components/navbar/navbar";
+import {Room} from "./components/room/room";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    const navigateToTab = (tabName) => {
+        console.log(`navigate to ${tabName}`);
+    }
+    return (
+        <SafeAreaProvider>
+            <SafeAreaView style={style.app}>
+                <Logo />
+                <Navbar onPress = {navigateToTab} />
+                <Room />
+            </SafeAreaView>
+        </SafeAreaProvider>
+    )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+

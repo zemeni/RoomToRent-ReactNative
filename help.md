@@ -5,10 +5,13 @@
     <li>npx</li>
 </ul>
 
-<h3>creating app</h3>
-<h2>sudo yarn create expo-app react-native-temperature --template blank</h3>
+<h3> creating app </h3>
+sudo yarn create expo-app react-native-temperature --template blank
 
-<h3>Changing folder permission of project folder </h3>
-<h2>chmod 777 my-project-folder</h2>
-<h2>sudo chown -R $(whoami) my-project-folder</h2>
+<h3> Changing folder permission of project folder </h3>
+chmod 777 my-project-folder
+sudo chown -R $(whoami) my-project-folder
+
+<h3> shadow generator </h3>
+https://ethercreative.github.io/react-native-shadow-generator/
 
