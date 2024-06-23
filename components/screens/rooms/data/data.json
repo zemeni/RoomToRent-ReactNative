@@ -1,0 +1,4 @@
+[
+  { "id": 1, "title": "Marker 1", "description": "Description 1", "coordinate": { "latitude": -33.91, "longitude": 151.09 } },
+  { "id": 2, "title": "Marker 2", "description": "Description 2", "coordinate": { "latitude": -33.91, "longitude": 151.08} }
+]

@@ -3,6 +3,7 @@ import { style } from "./Sports.style";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 const Sports = () => {
   const inset = useSafeAreaInsets();
+  console.log("sports is rendered");
   return (
     <View
       style={[

@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DarkTheme } from "@react-navigation/native";
 const Jobs = () => {
   const inset = useSafeAreaInsets();
+  console.log("job is rendered");
   return (
     <View
       style={[

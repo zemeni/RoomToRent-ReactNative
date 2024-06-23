@@ -1,10 +1,23 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from "react-native";
 
-export const style = StyleSheet.create({
-  room: {
+export const styles = StyleSheet.create({
+  safeArea: {
     flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    
+    padding: 10,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 35,
+  },
+  filterTextInput: {
+    // flex: 1,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 10,
+    fontSize: 16,
+    width: '100%',
+    backgroundColor: "#fff",
+    color: "red",
   },
 });
