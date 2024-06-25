@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { Button, TextInput, Modal, Portal } from 'react-native-paper';
 import DropDownPicker from "react-native-dropdown-picker";
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'; // Correct import
 import { styles } from './modal.style';
+
+const GOOGLE_PLACES_API_KEY = '';
 
 const SearchModal = ({ visible, hideModal, suburb, postcode, state, setSuburb, setPostcode, setState, onApplyFilters }) => {
     const [tempSuburb, setTempSuburb] = useState(suburb);
@@ -26,17 +29,19 @@ const SearchModal = ({ visible, hideModal, suburb, postcode, state, setSuburb, s
         setTempPostcode('');
     }, [tempState]);
 
-    const handleApply = () => {
-        onApplyFilters(); // Call the parent function to apply filters
-    };
-
     const handleApplyFilters = () => {
         setSuburb(tempSuburb);
         setPostcode(tempPostcode);
         setState(tempState);
-        handleApply();
+        onApplyFilters(); // Call the parent function to apply filters
         hideModal();
         console.log('Applying filters:', tempSuburb, tempPostcode, tempState);
+    };
+
+    const handleSelectSuburb = (data, details) => {
+        setTempSuburb(data.description);
+        // You can use details to get more information like place_id if needed
+        console.log('Selected Suburb:', data, details);
     };
 
     return (
@@ -52,17 +57,32 @@ const SearchModal = ({ visible, hideModal, suburb, postcode, state, setSuburb, s
                         setValue={(value) => setTempState(value)}
                         maxHeight={300}
                         autoScroll
-                        placeholder="select state"
+                        placeholder="Select state"
                         placeholderStyle={{ color: "black", fontSize: 16 }}
                     />
 
-                    <TextInput
-                        label="Suburb"
-                        value={tempSuburb}
-                        onChangeText={text => setTempSuburb(text)}
-                        style={styles.input}
-                        editable={!!tempState}
-                    />
+                    {tempState && (
+                        <GooglePlacesAutocomplete
+                            placeholder="Search Suburb"
+                            onPress={handleSelectSuburb}
+                            query={{
+                                key: GOOGLE_PLACES_API_KEY,
+                                language: 'en',
+                                types: '(cities)',
+                                components: `country:au|administrative_area:${tempState}`
+                            }}
+                            styles={{
+                                textInput: styles.input,
+                                container: { flex: 0 }
+                            }}
+                            textInputProps={{
+                                value: tempSuburb,
+                                onChangeText: setTempSuburb,
+                                editable: !!tempState
+                            }}
+                        />
+                    )}
+
                     <TextInput
                         label="Postcode"
                         value={tempPostcode}

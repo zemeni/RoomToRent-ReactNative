@@ -9,26 +9,24 @@ export const styles = StyleSheet.create({
     map: {
         ...StyleSheet.absoluteFillObject,
     },
-    resetButton: {
+    topRight: {
         position: 'absolute',
-        bottom: 20,
-        right: 20,
+        top: 20, // Adjust as needed to position from the top
+        right: 10,
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    bottomRight: {
+        position: 'absolute',
+        bottom: 80, // Adjust as needed to position from the bottom
+        right: 10,
+    },
+    mapTypeButton: {
+        padding: 10,
+    },
+    resetButton: {
         backgroundColor: 'white',
         padding: 10,
-        borderRadius: 50,
-        elevation: 5,
-        shadowColor: 'black',
-        shadowOpacity: 0.2,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 2,
-    },
-    resetButtonText: {
-        color: '#007AFF',
-        fontWeight: 'bold',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        borderRadius: 5,
     },
 });
