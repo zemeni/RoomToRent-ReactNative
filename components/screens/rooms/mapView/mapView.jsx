@@ -5,8 +5,11 @@ import * as Location from 'expo-location';
 import { styles } from './mapView.style';
 
 const MapViewTab = ({ markers }) => {
-    const [region, setRegion] = useState({});
-    const [location, setLocation] = useState(null);
+    const [region, setRegion] = useState({latitude: -33.9246,
+        longitude: 151.0930,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,});
+    const [location, setLocation] = useState({latitude: -33.9246, longitude:151.0930});
 
     useEffect(() => {
         (async () => {
