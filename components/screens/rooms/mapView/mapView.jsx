@@ -1,46 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {View, StyleSheet, TouchableOpacity, Text, ActivityIndicator} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
 import { styles } from './mapView.style';
 
-const MapViewTab = ({ markers }) => {
-    const [region, setRegion] = useState({latitude: -33.9246,
-        longitude: 151.0930,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,});
-    const [location, setLocation] = useState({latitude: -33.9246, longitude:151.0930});
+const MapViewTab = ({ markers, userLocation }) => {
+    const [region, setRegion] = useState(null);
+    const mapRef = useRef(null);
 
     useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert(
-                    'Permission to access location was denied. Please enable it in settings to continue.',
-                    [{ text: 'OK' }]
-                );
-                return;
-            }
-
-            let { coords } = await Location.getCurrentPositionAsync({});
-            setLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        if (userLocation) {
             setRegion({
-                latitude: coords.latitude,
-                longitude: coords.longitude,
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             });
-        })();
-    }, []);
+        }
+    }, [userLocation]);
+
+    const resetToCurrentLocation = () => {
+        if (mapRef.current && userLocation) {
+            mapRef.current.animateToRegion({
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            }, 1000);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <MapView
+                ref={mapRef}
                 style={styles.map}
-                region={region}
+                initialRegion={region}
                 showsUserLocation={true}
-                showsMyLocationButton={true}
+                showsMyLocationButton={false}
             >
+{/*                {userLocation && (
+                    <Marker coordinate={userLocation} title="You are here" />
+                )}*/}
                 {markers.map(marker => (
                     <Marker
                         key={marker.id}
@@ -50,6 +50,9 @@ const MapViewTab = ({ markers }) => {
                     />
                 ))}
             </MapView>
+            <TouchableOpacity style={styles.resetButton} onPress={resetToCurrentLocation}>
+                <Text style={styles.resetButtonText}>Reset Location</Text>
+            </TouchableOpacity>
         </View>
     );
 };
