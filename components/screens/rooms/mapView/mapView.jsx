@@ -1,21 +1,42 @@
-import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import {styles} from "./mapView.style";
+import * as Location from 'expo-location';
+import { styles } from './mapView.style';
 
-const MapViewTab = ({markers}) => {
+const MapViewTab = ({ markers }) => {
+    const [region, setRegion] = useState({});
+    const [location, setLocation] = useState(null);
 
-    console.log("map view is rendered ");
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(
+                    'Permission to access location was denied. Please enable it in settings to continue.',
+                    [{ text: 'OK' }]
+                );
+                return;
+            }
+
+            let { coords } = await Location.getCurrentPositionAsync({});
+            setLocation({ latitude: coords.latitude, longitude: coords.longitude });
+            setRegion({
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            });
+        })();
+    }, []);
 
     return (
         <View style={styles.container}>
-            <MapView style={styles.map}
-                     initialRegion={{
-                         latitude: -33.9246,
-                         longitude: 151.0930,
-                         latitudeDelta: 0.0922,
-                         longitudeDelta: 0.0421,
-                     }}
+            <MapView
+                style={styles.map}
+                region={region}
+                showsUserLocation={true}
+                showsMyLocationButton={true}
             >
                 {markers.map(marker => (
                     <Marker
