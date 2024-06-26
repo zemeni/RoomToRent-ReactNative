@@ -4,6 +4,7 @@ import {styles} from "./listView.style";
 
 const ListView = ({ markers, userLocation }) => {
 
+    console.log("rendering list view")
     return (
         <View style={styles.container}>
             <FlatList

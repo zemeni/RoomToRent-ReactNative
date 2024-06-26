@@ -7,8 +7,8 @@ import MapViewTab from './mapView/mapView';
 import ListView from './listView/listView';
 import SearchModal from "./modal/modal";
 import * as Location from 'expo-location';
-
-const markerData = require('./data/data.json');
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getCoordinatesFromAddress from "../../../service/geoCordinateConverter";
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -43,13 +43,32 @@ const Room = () => {
     }, []);
 
     useEffect(() => {
-        if (filtersApplied && location) {
-            console.log("API call is made with location:", location);
-            // Call your API with the location to filter data
-            // For now, we'll just load the local JSON data
-            setMarkers(markerData);
-        }
-    }, [filtersApplied, location]);
+        const fetchMarkers = async () => {
+            try {
+                // Fetch addresses from AsyncStorage
+                const storedAddresses = await AsyncStorage.getItem('ADDRESSES_KEY');
+                if (storedAddresses !== null) {
+                    const parsedAddresses = JSON.parse(storedAddresses);
+                    const markerPromises = parsedAddresses.map(async (address, index) => {
+                        const coords = await getCoordinatesFromAddress(address);
+                        return coords ? {
+                            id: index.toString(),
+                            coordinate: coords,
+                            title: `Marker ${index + 1}`,
+                            description: address,
+                        } : null;
+                    });
+
+                    const fetchedMarkers = await Promise.all(markerPromises);
+                    setMarkers(fetchedMarkers.filter(marker => marker !== null));
+                }
+            } catch (error) {
+                console.error('Error fetching addresses:', error);
+            }
+        };
+
+        fetchMarkers();
+    }, [filtersApplied]);
 
     const handleApplyFilters = () => {
         console.log("filter is applied");

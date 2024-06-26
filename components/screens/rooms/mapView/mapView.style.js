@@ -29,4 +29,16 @@ export const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
     },
+    postButton: {
+        position: 'absolute',
+        top: 30,
+        left: 20,
+        backgroundColor: '#072c7e',
+        padding: 10,
+        borderRadius: 5,
+    },
+    postButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
 });

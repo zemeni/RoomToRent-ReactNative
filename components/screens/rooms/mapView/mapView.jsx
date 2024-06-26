@@ -1,24 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, {useState, useRef, useContext, useEffect} from 'react';
+import { View, TouchableOpacity, Alert, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { FontAwesome, MaterialIcons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons'; // Import icons
 import { styles } from './mapView.style';
 
+import { AuthContext } from '../../../../service/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import {logAsyncStorage} from "../../../../service/utils";
+
 const MapViewTab = ({ markers, userLocation }) => {
-    const [region, setRegion] = useState(null);
     const [mapType, setMapType] = useState('standard'); // Default map type
     const mapRef = useRef(null);
 
-    useEffect(() => {
-        if (userLocation) {
-            setRegion({
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            });
-        }
-    }, [userLocation]);
+    const { user } = useContext(AuthContext);
+    const navigation = useNavigation();
 
     const resetToCurrentLocation = () => {
         if (mapRef.current && userLocation) {
@@ -35,12 +30,29 @@ const MapViewTab = ({ markers, userLocation }) => {
         setMapType(type);
     };
 
+    const handlePostRoom = () => {
+        if (!user) {
+            navigation.navigate('Login');
+        } else {
+            // Redirect to post room screen
+            Alert.alert('TODO:// post room, apartments feature');
+        }
+    };
+
+
+    console.log("rendering mav view")
+
     return (
         <View style={styles.container}>
             <MapView
                 ref={mapRef}
                 style={styles.map}
-                initialRegion={region}
+                initialRegion={userLocation ? {
+                    latitude: userLocation.latitude,
+                    longitude: userLocation.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                } : null}
                 showsUserLocation={true}
                 showsMyLocationButton={false}
                 mapType={mapType === 'standard' ? 'standard' : mapType === 'satellite' ? 'satellite' : 'hybrid'}
@@ -70,6 +82,9 @@ const MapViewTab = ({ markers, userLocation }) => {
                     <FontAwesome6 name="location-crosshairs" size={30} color="#3e5dd8" />
                 </TouchableOpacity>
             </View>
+            <TouchableOpacity style={styles.postButton} onPress={handlePostRoom}>
+                <Text style={styles.postButtonText}>Post Room</Text>
+            </TouchableOpacity>
         </View>
     );
 };
