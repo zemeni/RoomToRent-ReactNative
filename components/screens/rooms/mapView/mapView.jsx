@@ -6,7 +6,6 @@ import { styles } from './mapView.style';
 
 import { AuthContext } from '../../../../service/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import {logAsyncStorage} from "../../../../service/utils";
 
 const MapViewTab = ({ markers, userLocation }) => {
     const [mapType, setMapType] = useState('standard'); // Default map type
@@ -32,7 +31,7 @@ const MapViewTab = ({ markers, userLocation }) => {
 
     const handlePostRoom = () => {
         if (!user) {
-            navigation.navigate('Login');
+            navigation.navigate('Login', {fromScreen:'Rooms'});
         } else {
             // Redirect to post room screen
             Alert.alert('TODO:// post room, apartments feature');

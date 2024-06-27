@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
 
 const SignUpScreen = ({ navigation }) => {
@@ -7,16 +8,18 @@ const SignUpScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const route = useRoute();
+    const fromScreen = route.params?.fromScreen || 'MyProfile';
 
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         if (password !== confirmPassword) {
             Alert.alert('Passwords do not match', 'Please try again');
             return;
         }
 
-        signUp({ username, password });
-        login(username, password);
-        navigation.navigate('Main');
+        await signUp({ username, password });
+        // login(username, password);
+        navigation.navigate('Login', {fromScreen});
     };
 
     return (

@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = (username, password) => {
         const user = users.find(u => u.username === username && u.password === password);
+        console.log("user found in for login ", user);
         if (user) {
             setUser(user);
             return true;

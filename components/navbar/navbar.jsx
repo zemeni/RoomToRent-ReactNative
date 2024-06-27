@@ -1,11 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Room from "../screens/rooms/room";
 import Jobs from "../screens/jobs/jobs";
-import Sports from "../screens/sports/Sports";
 import MarketPlace from "../screens/marketplace/MarketPlace";
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as React from 'react';
+import sports from "../screens/sports/Sports";
+import MyProfile from "../screens/profile/MyProfile";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +25,8 @@ const Navbar = () => {
                         iconName = focused ? 'store' : 'store-outline';
                     } else if (route.name === 'Sports') {
                         iconName = focused ? 'soccer' : 'cricket';
+                    }else if (route.name === 'Profile') {
+                        iconName = focused ? 'account' : 'account-outline';
                     }
 
                     return <Icon name={iconName} size={size} color={color} />;
@@ -32,10 +35,11 @@ const Navbar = () => {
                 tabBarInactiveTintColor: 'gray',
             })}
         >
-            <Tab.Screen name="Rooms" component={Room} options={{headerShown: false}}/>
             <Tab.Screen name="Jobs" component={Jobs} />
+            <Tab.Screen name="Rooms" component={Room} options={{headerShown: false}}/>
             <Tab.Screen name="MarketPlace" component={MarketPlace} />
-            <Tab.Screen name="Sports" component={Sports} />
+            <Tab.Screen name="Sports" component={sports} />
+            <Tab.Screen name="Profile" component={MyProfile} options={{headerTitle: "My Profile"}}/>
         </Tab.Navigator>
     );
 }

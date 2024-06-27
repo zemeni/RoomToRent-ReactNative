@@ -1,17 +1,26 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { AuthContext } from './AuthContext';
+// LoginScreen.js
+import React, {useContext, useState} from 'react';
+import { View, Text, Button, Alert, StyleSheet } from 'react-native';
+import { TextInput } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import {AuthContext} from "./AuthContext";
 
-const LoginScreen = ({ navigation }) => {
-    const { login } = useContext(AuthContext);
+
+const LoginScreen = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigation = useNavigation();
+    const route = useRoute();
+    const fromScreen = route.params?.fromScreen || 'Profile';
+    const { login } = useContext(AuthContext);
 
-    const handleLogin = () => {
-        if (login(username, password)) {
-            navigation.navigate('Main');
+    const handleLogin = async () => {
+        const success = await login(username, password);
+        if (success) {
+            navigation.navigate(fromScreen);
         } else {
-            Alert.alert('Invalid credentials', 'Please try again');
+            Alert.alert('Login failed', 'Invalid username or password');
         }
     };
 
@@ -34,11 +43,12 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.buttonContainer}>
                 <Button title="Login" onPress={handleLogin} />
                 <View style={styles.buttonSpacer} />
-                <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
+                <Button title="Sign Up" onPress={() => navigation.navigate('SignUp', { fromScreen })} />
             </View>
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -65,7 +75,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     buttonSpacer: {
-        width: 10, // Adjust the width as needed for the margin between buttons
+        width: 10,
     },
 });
 
