@@ -1,14 +1,16 @@
-import React, {useState, useRef, useContext, useEffect} from 'react';
-import { View, TouchableOpacity, Alert, Text } from 'react-native';
+import React, { useState, useRef, useContext } from 'react';
+import { View, TouchableOpacity, Text, Modal } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { FontAwesome, MaterialIcons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons'; // Import icons
 import { styles } from './mapView.style';
 
 import { AuthContext } from '../../../../service/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import PostRoomForm from '../PostRoomForm'; // Import the form component
 
 const MapViewTab = ({ markers, userLocation }) => {
     const [mapType, setMapType] = useState('standard'); // Default map type
+    const [isFormVisible, setIsFormVisible] = useState(false);
     const mapRef = useRef(null);
 
     const { user } = useContext(AuthContext);
@@ -31,15 +33,21 @@ const MapViewTab = ({ markers, userLocation }) => {
 
     const handlePostRoom = () => {
         if (!user) {
-            navigation.navigate('Login', {fromScreen:'Rooms'});
+            navigation.navigate('Login', { fromScreen: 'Rooms' });
         } else {
-            // Redirect to post room screen
-            Alert.alert('TODO:// post room, apartments feature');
+            setIsFormVisible(true); // Show the form
         }
     };
 
+    const handleFormSubmit = (formData) => {
+        console.log('Form Data:', formData);
+        setIsFormVisible(false);
+        // Add logic to handle form submission
+    };
 
-    console.log("rendering mav view")
+    const handleFormCancel = () => {
+        setIsFormVisible(false);
+    };
 
     return (
         <View style={styles.container}>
@@ -84,6 +92,9 @@ const MapViewTab = ({ markers, userLocation }) => {
             <TouchableOpacity style={styles.postButton} onPress={handlePostRoom}>
                 <Text style={styles.postButtonText}>Post Room</Text>
             </TouchableOpacity>
+            <Modal visible={isFormVisible} animationType="slide">
+                <PostRoomForm onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+            </Modal>
         </View>
     );
 };
