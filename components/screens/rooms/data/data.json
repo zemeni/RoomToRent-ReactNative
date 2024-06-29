@@ -1,4 +1,20 @@
 [
-  { "id": 1, "title": "Marker 1", "description": "Description 1", "coordinate": { "latitude": -33.91, "longitude": 151.09 } },
-  { "id": 2, "title": "Marker 2", "description": "Description 2", "coordinate": { "latitude": -33.91, "longitude": 151.08} }
+  {
+    "id": 1,
+    "title": "Marker 1",
+    "description": "Description 1",
+    "coordinate": { "latitude": -33.91, "longitude": 151.09 },
+    "price": "200 aud",
+    "phone": "0452647338",
+    "date": "2024-06-21"
+  },
+  {
+    "id": 2,
+    "title": "Marker 2",
+    "description": "Description 2",
+    "coordinate": { "latitude": -33.91, "longitude": 151.08 },
+    "price": "200 aud",
+    "phone": "0452647338",
+    "date": "2024-06-22"
+  }
 ]

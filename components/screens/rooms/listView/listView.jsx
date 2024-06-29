@@ -1,23 +1,25 @@
-import React from 'react';
-import { View, Text, FlatList } from 'react-native';
-import {styles} from "./listView.style";
+import React from "react";
+import { View, Text, FlatList } from "react-native";
+import { styles } from "./listView.style";
+import ItemCard from "../../../cards/itemcard";
 
 const ListView = ({ markers }) => {
-    console.log("list view is rendered");
-    return (
-        <FlatList style={styles.item}
-            data={markers}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => (
-                <View style={styles.item}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text>{item.description}</Text>
-                    <Text>Latitude: {item.coordinate.latitude}</Text>
-                    <Text>Longitude: {item.coordinate.longitude}</Text>
-                </View>
-            )}
+  console.log("list view is rendered");
+  return (
+    <FlatList
+      data={markers}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <ItemCard
+          title={item.title}
+          description={item.description}
+          phone={item.phone}
+          price={item.price}
+          date={item.date}
         />
-    );
+      )}
+    />
+  );
 };
 
 export default ListView;
