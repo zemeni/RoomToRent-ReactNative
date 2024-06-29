@@ -1,13 +1,44 @@
-import {Dimensions, StyleSheet} from "react-native";
+import {StyleSheet} from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'flex-end',
         alignItems: 'center',
     },
     map: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
+        ...StyleSheet.absoluteFillObject,
+    },
+    topRight: {
+        position: 'absolute',
+        top: 20, // Adjust as needed to position from the top
+        right: 10,
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+    },
+    bottomRight: {
+        position: 'absolute',
+        bottom: 80, // Adjust as needed to position from the bottom
+        right: 10,
+    },
+    mapTypeButton: {
+        padding: 10,
+    },
+    resetButton: {
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: 5,
+    },
+    postButton: {
+        position: 'absolute',
+        top: 30,
+        left: 20,
+        backgroundColor: '#072c7e',
+        padding: 10,
+        borderRadius: 5,
+    },
+    postButtonText: {
+        color: 'white',
+        fontSize: 16,
     },
 });
