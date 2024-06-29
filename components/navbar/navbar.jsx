@@ -3,8 +3,8 @@ import Room from "../screens/rooms/room";
 import Jobs from "../screens/jobs/jobs";
 import MarketPlace from "../screens/marketplace/MarketPlace";
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import * as React from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import * as React from "react";
 import sports from "../screens/sports/Sports";
 import MyProfile from "../screens/profile/MyProfile";
 
@@ -17,31 +17,39 @@ const Navbar = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-                    if (route.name === 'Rooms') {
-                        iconName = focused ? 'home-circle' : 'home-circle-outline';
-                    } else if (route.name === 'Jobs') {
-                        iconName = focused ? 'briefcase' : 'briefcase-outline';
-                    } else if (route.name === 'MarketPlace') {
-                        iconName = focused ? 'store' : 'store-outline';
-                    } else if (route.name === 'Sports') {
-                        iconName = focused ? 'soccer' : 'cricket';
-                    }else if (route.name === 'Profile') {
-                        iconName = focused ? 'account' : 'account-outline';
-                    }
+          if (route.name === "Rooms") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "Jobs") {
+            iconName = focused ? "briefcase" : "briefcase-outline";
+          } else if (route.name === "MarketPlace") {
+            iconName = focused ? "storefront" : "storefront-outline";
+          } else if (route.name === "Sports") {
+            iconName = focused ? "trophy" : "trophy-outline";
+          } else if (route.name === "Profile") {
+            iconName = focused ? "person" : "person-outline";
+          }
 
-                    return <Icon name={iconName} size={size} color={color} />;
-                },
-                tabBarActiveTintColor: 'blue',
-                tabBarInactiveTintColor: 'gray',
-            })}
-        >
-            <Tab.Screen name="Jobs" component={Jobs} />
-            <Tab.Screen name="Rooms" component={Room} options={{headerShown: false}}/>
-            <Tab.Screen name="MarketPlace" component={MarketPlace} />
-            <Tab.Screen name="Sports" component={sports} />
-            <Tab.Screen name="Profile" component={MyProfile} options={{headerTitle: "My Profile"}}/>
-        </Tab.Navigator>
-    );
-}
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: "blue",
+        tabBarInactiveTintColor: "gray",
+      })}
+    >
+      <Tab.Screen name="Jobs" component={Jobs} />
+      <Tab.Screen
+        name="Rooms"
+        component={Room}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen name="MarketPlace" component={MarketPlace} />
+      <Tab.Screen name="Sports" component={sports} />
+      <Tab.Screen
+        name="Profile"
+        component={MyProfile}
+        options={{ headerTitle: "My Profile" }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 export default Navbar;
