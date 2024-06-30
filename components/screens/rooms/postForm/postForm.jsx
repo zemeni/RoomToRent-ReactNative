@@ -5,7 +5,7 @@ import {Picker} from '@react-native-picker/picker';
 import PostRoomForm from '../postRoomForm/PostRoomForm';
 import PostUnitForm from '../postUnitForm/postUnitForm';
 
-const PostForm = () => {
+const PostForm = ({onSubmit, onCancel}) => {
     const [selectedType, setSelectedType] = useState('');
     const [showForm, setShowForm] = useState(false);
 
@@ -15,9 +15,7 @@ const PostForm = () => {
     };
 
     const handleCancel = () => {
-        setSelectedType('');
-        setShowForm(false); // Hide the form when canceling
-        oncancel();
+        onCancel();
     };
 
     const SelectedFormComponent = selectedType === 'room' ? PostRoomForm : selectedType === 'unit' ? PostUnitForm : null;
@@ -56,16 +54,20 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         position: 'absolute',
-        top: 10,
-        right: 10,
+        top: 20,
+        right: 25,
         zIndex: 1,
     },
     roomSelection: {
         marginBottom: 20,
+
     },
     label: {
         fontSize: 18,
         marginBottom: 10,
+        paddingTop: 20,
+        paddingLeft: 15,
+        // backgroundColor: '#f8f7f7',
     },
     input: {
         height: 40,
@@ -73,6 +75,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
+        backgroundColor: '#dadada',
     },
 });
 

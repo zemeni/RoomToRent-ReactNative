@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
     },
     scrollContainer: {
         flexGrow: 1,
+        // backgroundColor: '#f4f4f4',
     },
     roomSelection: {
         marginBottom: 20,
