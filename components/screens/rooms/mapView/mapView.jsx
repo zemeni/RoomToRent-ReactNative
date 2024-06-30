@@ -6,7 +6,7 @@ import { styles } from './mapView.style';
 
 import { AuthContext } from '../../../../service/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import PostRoomForm from '../PostRoomForm'; // Import the form component
+import PostRoomForm from '../postRoomForm/PostRoomForm'; // Import the form component
 
 const MapViewTab = ({ markers, userLocation }) => {
     const [mapType, setMapType] = useState('standard'); // Default map type
@@ -48,6 +48,8 @@ const MapViewTab = ({ markers, userLocation }) => {
     const handleFormCancel = () => {
         setIsFormVisible(false);
     };
+
+    console.log("rendering map view page");
 
     return (
         <View style={styles.container}>

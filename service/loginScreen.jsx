@@ -12,7 +12,7 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
     const route = useRoute();
-    const fromScreen = route.params?.fromScreen || 'Profile';
+    const fromScreen = route.params?.fromScreen;
     const { login } = useContext(AuthContext);
 
     const handleLogin = async () => {
