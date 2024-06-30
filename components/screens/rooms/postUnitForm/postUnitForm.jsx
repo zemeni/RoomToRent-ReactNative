@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import {styles} from "./postRoomForm.style";
+import { styles } from "./postUnitForm.style";
 
-const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
-    const [rooms, setRooms] = useState([]);
+const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
+    const [units, setUnits] = useState([]);
     const [showSelectTypeMessage, setShowSelectTypeMessage] = useState(false);
-    const [selectedType, setSelectedType] = useState('room');
+    const [selectedType, setSelectedType] = useState('room'); // Default to 'room'
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [validationErrors, setValidationErrors] = useState({});
 
@@ -15,14 +15,15 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
 
     useEffect(() => {
         const initialRoom = { id: 1, roomType: selectedType, address: '', price: 0, description: '', bathrooms: 0, parkings: 0, images: [] };
-        setRooms([initialRoom]);
+        setUnits([initialRoom]);
     }, []);
 
     useEffect(() => {
-        if(rooms.length === 0 && showSelectTypeMessage) {
+        console.log("inside use effect");
+        if(units.length === 0 && showSelectTypeMessage) {
             handleRoomTypeChange('');
         }
-    }, [rooms]);
+    }, [units]);
 
     const validateField = (field, value) => {
         switch (field) {
@@ -44,7 +45,7 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
     // Function to validate the form
     const validateForm = () => {
         const errors = {};
-        const isFormValid = rooms.length > 0 && rooms.every(room => {
+        const isFormValid = units.length > 0 && units.every(room => {
             let isValid = true;
             ['address', 'price', 'bathrooms', 'parkings', 'images'].forEach(field => {
                 if (!validateField(field, room[field])) {
@@ -61,7 +62,7 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
 
     useEffect(() => {
         validateForm();
-    }, [rooms]);
+    }, [units]);
 
     const handleNumericChange = (value, roomId, field) => {
         let numericValue = parseInt(value, 10);
@@ -71,23 +72,23 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
         if (numericValue < 0) {
             numericValue = 0;
         }
-        const updatedRooms = rooms.map(room => {
+        const updatedRooms = units.map(room => {
             if (room.id === roomId) {
                 return { ...room, [field]: numericValue };
             }
             return room;
         });
-        setRooms(updatedRooms);
+        setUnits(updatedRooms);
     };
 
     const handleTextChange = (value, roomId, field) => {
-        const updatedRooms = rooms.map(room => {
+        const updatedRooms = units.map(room => {
             if (room.id === roomId) {
                 return { ...room, [field]: value };
             }
             return room;
         });
-        setRooms(updatedRooms);
+        setUnits(updatedRooms);
     };
 
     const pickImage = async (roomId) => {
@@ -99,50 +100,47 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
 
         if (!result.cancelled) {
             const newImages = result.assets.map(asset => asset.uri);
-            const updatedRooms = rooms.map(room => {
+            const updatedRooms = units.map(room => {
                 if (room.id === roomId) {
                     const limitedImages = [...room.images, ...newImages].slice(0, MAX_IMAGES);
                     return { ...room, images: limitedImages };
                 }
                 return room;
             });
-            setRooms(updatedRooms);
+            setUnits(updatedRooms);
         }
     };
 
     const removeImage = (roomId, uri) => {
-        const updatedRooms = rooms.map(room => {
+        const updatedRooms = units.map(room => {
             if (room.id === roomId) {
                 return { ...room, images: room.images.filter(image => image !== uri) };
             }
             return room;
         });
-        setRooms(updatedRooms);
+        setUnits(updatedRooms);
     };
 
     const addRoom = () => {
-        const newRoomId = rooms.length + 1;
+        const newRoomId = units.length + 1;
         const newRoom = { id: newRoomId, roomType: selectedType, address: '', price: 0, description: '', bathrooms: 0, parkings: 0, images: [] };
-        setRooms([...rooms, newRoom]);
+        setUnits([...units, newRoom]);
     };
 
     const removeRoom = (roomId) => {
-        const updatedRooms = rooms.filter(room => room.id !== roomId);
-        setRooms(updatedRooms);
+        const updatedRooms = units.filter(room => room.id !== roomId);
+        setUnits(updatedRooms);
         if(updatedRooms.length === 0)
             setShowSelectTypeMessage(true);
     };
 
     const handleSubmit = () => {
-        onSubmit(rooms);
+        onSubmit(units);
     };
 
     const handleCancel = () => {
         onCancel();
     };
-
-    console.log("selected type ", selectedType);
-    console.log("rooms size ", rooms.length);
 
     return (
         <KeyboardAvoidingView
@@ -151,58 +149,58 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
             keyboardVerticalOffset={80}
         >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {rooms.map(room => (
-                    <View key={room.id} style={styles.roomContainer}>
-                        <TouchableOpacity style={styles.cancelButton} onPress={() => removeRoom(room.id)}>
+                {units.map(unit => (
+                    <View key={unit.id} style={styles.roomContainer}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={() => removeRoom(unit.id)}>
                             <FontAwesome name="times-circle" size={30} color="red" />
                         </TouchableOpacity>
-                        <Text style={styles.formTitle}>Room {room.id}</Text>
+                        <Text style={styles.formTitle}>Unit {unit.id}</Text>
                         <Text style={styles.label}>Address *</Text>
                         <TextInput
-                            style={[styles.input, validationErrors[room.id]?.address && styles.errorInput]}
+                            style={[styles.input, validationErrors[unit.id]?.address && styles.errorInput]}
                             placeholder="Enter Address"
-                            value={room.address}
-                            onChangeText={(text) => handleTextChange(text, room.id, 'address')}
+                            value={unit.address}
+                            onChangeText={(text) => handleTextChange(text, unit.id, 'address')}
                         />
-                        {validationErrors[room.id]?.address && <Text style={styles.errorText}>Address is required.</Text>}
+                        {validationErrors[unit.id]?.address && <Text style={styles.errorText}>Address is required.</Text>}
                         <Text style={styles.label}>Price *</Text>
                         <TextInput
-                            style={[styles.input, validationErrors[room.id]?.price && styles.errorInput]}
+                            style={[styles.input, validationErrors[unit.id]?.price && styles.errorInput]}
                             placeholder="Enter Price"
-                            value={room.price.toString()}
-                            onChangeText={(text) => handleNumericChange(text, room.id, 'price')}
+                            value={unit.price.toString()}
+                            onChangeText={(text) => handleNumericChange(text, unit.id, 'price')}
                             keyboardType="numeric"
                         />
-                        {validationErrors[room.id]?.price && <Text style={styles.errorText}>Price must be greater than 0.</Text>}
+                        {validationErrors[unit.id]?.price && <Text style={styles.errorText}>Price must be greater than 0.</Text>}
                         <Text style={styles.label}>Description</Text>
                         <TextInput
                             style={[styles.input, styles.descriptionInput]}
                             placeholder="Enter Description"
-                            value={room.description}
-                            onChangeText={(text) => handleTextChange(text, room.id, 'description')}
+                            value={unit.description}
+                            onChangeText={(text) => handleTextChange(text, unit.id, 'description')}
                             multiline
                         />
                         <Text style={styles.label}>Number of Bathrooms *</Text>
                         <TextInput
-                            style={[styles.input, validationErrors[room.id]?.bathrooms && styles.errorInput]}
+                            style={[styles.input, validationErrors[unit.id]?.bathrooms && styles.errorInput]}
                             placeholder="Enter Number of Bathrooms"
-                            value={room.bathrooms.toString()}
-                            onChangeText={(text) => handleNumericChange(text, room.id, 'bathrooms')}
+                            value={unit.bathrooms.toString()}
+                            onChangeText={(text) => handleNumericChange(text, unit.id, 'bathrooms')}
                             keyboardType="numeric"
                         />
-                        {validationErrors[room.id]?.bathrooms && <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
+                        {validationErrors[unit.id]?.bathrooms && <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
                         <Text style={styles.label}>Number of Parkings *</Text>
                         <TextInput
-                            style={[styles.input, validationErrors[room.id]?.parkings && styles.errorInput]}
+                            style={[styles.input, validationErrors[unit.id]?.parkings && styles.errorInput]}
                             placeholder="Enter Number of Parkings"
-                            value={room.parkings.toString()}
-                            onChangeText={(text) => handleNumericChange(text, room.id, 'parkings')}
+                            value={unit.parkings.toString()}
+                            onChangeText={(text) => handleNumericChange(text, unit.id, 'parkings')}
                             keyboardType="numeric"
                         />
-                        {validationErrors[room.id]?.parkings && <Text style={styles.errorText}>Number of parkings must be 0 or more.</Text>}
-                        <Button title="Upload Images" onPress={() => pickImage(room.id)} />
+                        {validationErrors[unit.id]?.parkings && <Text style={styles.errorText}>Number of parkings must be 0 or more.</Text>}
+                        <Button title="Upload Images" onPress={() => pickImage(unit.id)} />
                         <ScrollView horizontal style={styles.imagePreviewContainer}>
-                            {room.images.map((uri) => (
+                            {unit.images.map((uri) => (
                                 <View key={uri} style={styles.imagePreview}>
                                     <Image source={{ uri }} style={styles.image} />
                                     <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(room.id, uri)}>
@@ -214,15 +212,9 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                         <Text>You can upload up to {MAX_IMAGES} images.</Text>
                     </View>
                 ))}
-                {selectedType === 'room' && rooms.length === 0 && (
-                    <>
-                        {handleRoomTypeChange('')}
-                        <Text style={styles.noRoomsMessage}>Select 'Room' to start adding rooms.</Text>
-                    </>
-                )}
-                {rooms.length > 0 && (
+                {units.length > 0 && (
                     <View style={styles.buttonContainer}>
-                        <Button title={`Add Room ${rooms.length + 1}`} onPress={addRoom} />
+                        <Button title={`Add Unit ${units.length + 1}`} onPress={addRoom} />
                         <Button title="Submit" onPress={handleSubmit} disabled={isSubmitDisabled} />
                     </View>
                 )}
@@ -231,4 +223,4 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
     );
 };
 
-export default PostRoomForm;
+export default PostUnitForm;
