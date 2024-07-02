@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Room from "../screens/rooms/room";
 import Jobs from "../screens/jobs/jobs";
 import MarketPlace from "../screens/marketplace/MarketPlace";
-
 import { Ionicons } from "@expo/vector-icons";
 import * as React from "react";
 import sports from "../screens/sports/Sports";
@@ -17,17 +16,17 @@ const Navbar = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === "Rooms") {
-            iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Jobs") {
-            iconName = focused ? "briefcase" : "briefcase-outline";
-          } else if (route.name === "MarketPlace") {
-            iconName = focused ? "storefront" : "storefront-outline";
-          } else if (route.name === "Sports") {
-            iconName = focused ? "trophy" : "trophy-outline";
-          } else if (route.name === "Profile") {
-            iconName = focused ? "person" : "person-outline";
-          }
+      if (route.name === "Rooms") {
+        iconName = focused ? "home" : "home-outline";
+      } else if (route.name === "Jobs") {
+        iconName = focused ? "briefcase" : "briefcase-outline";
+      } else if (route.name === "MarketPlace") {
+        iconName = focused ? "storefront" : "storefront-outline";
+      } else if (route.name === "Sports") {
+        iconName = focused ? "trophy" : "trophy-outline";
+      } else if (route.name === "Profile") {
+        iconName = focused ? "person" : "person-outline";
+      }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },

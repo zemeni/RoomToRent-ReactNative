@@ -47,6 +47,7 @@ const Room = () => {
             try {
                 // Fetch addresses from AsyncStorage
                 const storedAddresses = await AsyncStorage.getItem('ADDRESSES_KEY');
+                console.log("stored address is ", storedAddresses);
                 if (storedAddresses !== null) {
                     const parsedAddresses = JSON.parse(storedAddresses);
                     const markerPromises = parsedAddresses.map(async (address, index) => {

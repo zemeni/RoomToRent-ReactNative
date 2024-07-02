@@ -16,7 +16,10 @@ const Stack = createStackNavigator();
 export default function App() {
     const addresses = [
         "16 Pankina Grove, Marion 5043, SA",
-        "25 Boyle St, Marion SA 5043"
+        "25 Boyle St, Marion SA 5043",
+        "1/214 findon rd, findon SA 5023",
+        "2 Alice St, Plympton SA 5038",
+        "65 West St, Semaphore Park SA 5019"
     ];
     useEffect(() => {
         // removeAddresses();
