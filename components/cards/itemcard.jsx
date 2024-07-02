@@ -1,11 +1,22 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import itemCardStyle from "./itemCard.style";
 import { Ionicons } from "@expo/vector-icons";
-const ItemCard = (props) => {
-  const { title, description, phone, price, date } = props;
+const ItemCard = ({
+  title,
+  description,
+  phone,
+  price,
+  date,
+  onPress,
+  ...otherProps
+}) => {
   return (
-    <>
-      <View style={itemCardStyle.card}>
+    <TouchableOpacity
+      style={itemCardStyle.card}
+      {...otherProps}
+      onPress={onPress}
+    >
+      <View>
         <View style={itemCardStyle.Headings}>
           <Text style={itemCardStyle.title}>{title}</Text>
           <Text style={itemCardStyle.description}>{description}</Text>
@@ -26,7 +37,7 @@ const ItemCard = (props) => {
           </View>
         </View>
       </View>
-    </>
+    </TouchableOpacity>
   );
 };
 export default ItemCard;
