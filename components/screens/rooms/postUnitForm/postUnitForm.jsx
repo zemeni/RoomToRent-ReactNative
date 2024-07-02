@@ -7,7 +7,7 @@ import { styles } from "./postUnitForm.style";
 const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
     const [units, setUnits] = useState([]);
     const [showSelectTypeMessage, setShowSelectTypeMessage] = useState(false);
-    const [selectedType, setSelectedType] = useState('room'); // Default to 'room'
+    const [selectedType, setSelectedType] = useState('unit'); // Default to 'room'
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [validationErrors, setValidationErrors] = useState({});
 
@@ -23,7 +23,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
         if(units.length === 0 && showSelectTypeMessage) {
             handleRoomTypeChange('');
         }
-    }, [units]);
+    }, [units.length]);
 
     const validateField = (field, value) => {
         switch (field) {
@@ -64,7 +64,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
         validateForm();
     }, [units]);
 
-    const handleNumericChange = (value, roomId, field) => {
+    const handleNumericChange = (value, unitId, field) => {
         let numericValue = parseInt(value, 10);
         if (isNaN(numericValue)) {
             numericValue = 0;
@@ -72,26 +72,26 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
         if (numericValue < 0) {
             numericValue = 0;
         }
-        const updatedRooms = units.map(room => {
-            if (room.id === roomId) {
+        const updatedUnits = units.map(room => {
+            if (room.id === unitId) {
                 return { ...room, [field]: numericValue };
             }
             return room;
         });
-        setUnits(updatedRooms);
+        setUnits(updatedUnits);
     };
 
-    const handleTextChange = (value, roomId, field) => {
-        const updatedRooms = units.map(room => {
-            if (room.id === roomId) {
-                return { ...room, [field]: value };
+    const handleTextChange = (value, unitId, field) => {
+        const updatedRooms = units.map(unit => {
+            if (unit.id === unitId) {
+                return { ...unit, [field]: value };
             }
-            return room;
+            return unit;
         });
         setUnits(updatedRooms);
     };
 
-    const pickImage = async (roomId) => {
+    const pickImage = async (unitId) => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsMultipleSelection: true,
@@ -100,14 +100,14 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
 
         if (!result.cancelled) {
             const newImages = result.assets.map(asset => asset.uri);
-            const updatedRooms = units.map(room => {
-                if (room.id === roomId) {
-                    const limitedImages = [...room.images, ...newImages].slice(0, MAX_IMAGES);
-                    return { ...room, images: limitedImages };
+            const updatedUnits = units.map(unit => {
+                if (unit.id === unitId) {
+                    const limitedImages = [...unit.images, ...newImages].slice(0, MAX_IMAGES);
+                    return { ...unit, images: limitedImages };
                 }
-                return room;
+                return unit;
             });
-            setUnits(updatedRooms);
+            setUnits(updatedUnits);
         }
     };
 
@@ -135,6 +135,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
     };
 
     const handleSubmit = () => {
+        console.log("units ", units);
         onSubmit(units);
     };
 
@@ -160,7 +161,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                             style={[styles.input, validationErrors[unit.id]?.address && styles.errorInput]}
                             placeholder="Enter Address"
                             value={unit.address}
-                            onChangeText={(text) => handleTextChange(text, unit.id, 'address')}
+                            onChangeText={(address) => handleTextChange(address, unit.id, 'address')}
                         />
                         {validationErrors[unit.id]?.address && <Text style={styles.errorText}>Address is required.</Text>}
                         <Text style={styles.label}>Price *</Text>
@@ -168,7 +169,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                             style={[styles.input, validationErrors[unit.id]?.price && styles.errorInput]}
                             placeholder="Enter Price"
                             value={unit.price.toString()}
-                            onChangeText={(text) => handleNumericChange(text, unit.id, 'price')}
+                            onChangeText={(price) => handleNumericChange(price, unit.id, 'price')}
                             keyboardType="numeric"
                         />
                         {validationErrors[unit.id]?.price && <Text style={styles.errorText}>Price must be greater than 0.</Text>}
@@ -177,7 +178,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                             style={[styles.input, styles.descriptionInput]}
                             placeholder="Enter Description"
                             value={unit.description}
-                            onChangeText={(text) => handleTextChange(text, unit.id, 'description')}
+                            onChangeText={(description) => handleTextChange(description, unit.id, 'description')}
                             multiline
                         />
                         <Text style={styles.label}>Number of Bathrooms *</Text>
@@ -185,7 +186,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                             style={[styles.input, validationErrors[unit.id]?.bathrooms && styles.errorInput]}
                             placeholder="Enter Number of Bathrooms"
                             value={unit.bathrooms.toString()}
-                            onChangeText={(text) => handleNumericChange(text, unit.id, 'bathrooms')}
+                            onChangeText={(bathrooms) => handleNumericChange(bathrooms, unit.id, 'bathrooms')}
                             keyboardType="numeric"
                         />
                         {validationErrors[unit.id]?.bathrooms && <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
@@ -194,7 +195,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                             style={[styles.input, validationErrors[unit.id]?.parkings && styles.errorInput]}
                             placeholder="Enter Number of Parkings"
                             value={unit.parkings.toString()}
-                            onChangeText={(text) => handleNumericChange(text, unit.id, 'parkings')}
+                            onChangeText={(parkings) => handleNumericChange(parkings, unit.id, 'parkings')}
                             keyboardType="numeric"
                         />
                         {validationErrors[unit.id]?.parkings && <Text style={styles.errorText}>Number of parkings must be 0 or more.</Text>}
@@ -203,7 +204,7 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                             {unit.images.map((uri) => (
                                 <View key={uri} style={styles.imagePreview}>
                                     <Image source={{ uri }} style={styles.image} />
-                                    <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(room.id, uri)}>
+                                    <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(unit.id, uri)}>
                                         <FontAwesome name="times-circle" size={24} color="red" />
                                     </TouchableOpacity>
                                 </View>
