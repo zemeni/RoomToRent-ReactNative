@@ -150,10 +150,6 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
         onSubmit(consolidatedData);
     };
 
-    const handleCancel = () => {
-        onCancel();
-    };
-
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -166,7 +162,7 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                     style={[styles.input]}
                     placeholder="Enter Address"
                     value={address}
-                    onChangeText={(address) => handleTextChange(address, 0, 'address')}
+                    onChangeText={(address) => handleTextChange(address, null, 'address')}
                 />
                 {validationErrors.address && <Text style={styles.errorText}>Address is required.</Text>}
                 {rooms.map(room => (

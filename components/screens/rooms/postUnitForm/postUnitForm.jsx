@@ -139,10 +139,6 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
         onSubmit(units);
     };
 
-    const handleCancel = () => {
-        onCancel();
-    };
-
     return (
         <KeyboardAvoidingView
             style={styles.container}

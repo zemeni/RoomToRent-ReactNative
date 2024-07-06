@@ -14,15 +14,11 @@ const PostForm = ({onSubmit, onCancel}) => {
         setShowForm(true); // Show the form after selecting a type
     };
 
-    const handleCancel = () => {
-        onCancel();
-    };
-
     const SelectedFormComponent = selectedType === 'room' ? PostRoomForm : selectedType === 'unit' ? PostUnitForm : null;
 
     return (
         <>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+            <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
                 <FontAwesome name="times-circle" size={30} color="red"/>
             </TouchableOpacity>
             <View style={styles.roomSelection}>
@@ -38,7 +34,7 @@ const PostForm = ({onSubmit, onCancel}) => {
                     {/* Add more options for other room types */}
                 </Picker>
             </View>
-            {showForm && SelectedFormComponent && <SelectedFormComponent handleRoomTypeChange={handleRoomTypeChange} onSubmit={onSubmit}/>}
+            {showForm && SelectedFormComponent && <SelectedFormComponent handleRoomTypeChange={handleRoomTypeChange} onSubmit={onSubmit} onCancel={onCancel}/>}
         </>
     );
 };
