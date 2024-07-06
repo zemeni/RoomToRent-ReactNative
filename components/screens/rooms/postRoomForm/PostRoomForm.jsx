@@ -171,7 +171,7 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                 {validationErrors.address && <Text style={styles.errorText}>Address is required.</Text>}
                 {rooms.map(room => (
                     <View key={room.id} style={styles.roomContainer}>
-                        <TouchableOpacity style={styles.cancelButton} onPress={() => removeRoom(unit.id)}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={() => removeRoom(room.id)}>
                             <FontAwesome name="times-circle" size={30} color="red" />
                         </TouchableOpacity>
                         <Text style={styles.formTitle}>Room {room.id}</Text>
