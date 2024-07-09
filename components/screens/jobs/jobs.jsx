@@ -16,7 +16,7 @@ const Jobs = () => {
                     // alert(`Address selected: ${data.description}`);
                 }}
                 query={{
-                    key: 'AIzaSyAUsXRUXnavthEq2krHHUjQU2P_KNswKbw',
+                    key: 'google api key',
                     language: 'en',
                 }}
                 styles={{
