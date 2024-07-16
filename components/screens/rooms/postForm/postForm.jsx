@@ -38,7 +38,7 @@ const PostForm = ({onSubmit, onCancel}) => {
                     {/* Add more options for other room types */}
                 </Picker>
             </View>
-            {showForm && SelectedFormComponent && <SelectedFormComponent handleRoomTypeChange={handleRoomTypeChange}/>}
+            {showForm && SelectedFormComponent && <SelectedFormComponent handleRoomTypeChange={handleRoomTypeChange} onSubmit={onSubmit}/>}
         </>
     );
 };

@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import PostForm from "../postForm/postForm"; // Import the form component
 
 const MapViewTab = ({ markers, userLocation }) => {
-    const [mapType, setMapType] = useState('standard'); // Default map type
+    const [mapType, setMapType] = useState('satellite'); // Default map type
     const [isFormVisible, setIsFormVisible] = useState(false);
     const mapRef = useRef(null);
 
