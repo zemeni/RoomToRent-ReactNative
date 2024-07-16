@@ -1,4 +1,6 @@
-import {StyleSheet} from "react-native";
+import {StyleSheet, Dimensions} from "react-native";
+
+const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
     container: {
@@ -31,7 +33,7 @@ export const styles = StyleSheet.create({
     },
     postButton: {
         position: 'absolute',
-        top: 30,
+        top: 50,
         left: 20,
         backgroundColor: '#072c7e',
         padding: 10,
@@ -40,5 +42,27 @@ export const styles = StyleSheet.create({
     postButtonText: {
         color: 'white',
         fontSize: 16,
+    },
+    sliderContainer: {
+        display: 'flex',
+        flexDirection: "row",
+        width: '100%',
+        height: 50,
+        justifyContent: 'space-around',
+        backgroundColor: "#adc3c3",
+        bottom: 15
+    },
+    slider: {
+        width: width * 0.7,
+    },
+    searchButton: {
+        backgroundColor: '#3168d6',
+        borderRadius: 10,
+        padding: 5,
+    },
+    searchButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

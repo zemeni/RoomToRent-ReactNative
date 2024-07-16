@@ -14,8 +14,8 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
     const MAX_IMAGES = 5;
 
     useEffect(() => {
-        const initialRoom = { id: 1, roomType: selectedType, address: '', price: 0, description: '', bathrooms: 0, parkings: 0, images: [] };
-        setUnits([initialRoom]);
+        const initialUnit = { id: 1, roomType: selectedType, address: '', price: 0, description: '', bathrooms: 0, parkings: 0, images: [] };
+        setUnits([initialUnit]);
     }, []);
 
     useEffect(() => {
@@ -137,10 +137,6 @@ const PostUnitForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
     const handleSubmit = () => {
         console.log("units ", units);
         onSubmit(units);
-    };
-
-    const handleCancel = () => {
-        onCancel();
     };
 
     return (
