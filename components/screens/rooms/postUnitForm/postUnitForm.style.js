@@ -7,11 +7,12 @@ export const styles = StyleSheet.create({
     },
     scrollContainer: {
         flexGrow: 1,
+        // backgroundColor: '#f4f4f4',
     },
-    roomSelection: {
+    unitSelection: {
         marginBottom: 20,
     },
-    roomContainer: {
+    unitContainer: {
         marginBottom: 20,
         padding: 10,
         borderColor: 'gray',
@@ -80,22 +81,3 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
     },
 });
-
-/*    // Function to validate the form
-    const validateForm = () => {
-        console.log("validating form");
-        const isFormValid = rooms.length > 0 && rooms.every(room => {
-            return room.address !== '' && room.price > 0 && room.bathrooms > 0 && room.parkings >= 0 && room.images.length <= MAX_IMAGES;
-        });
-        console.log("rooms.length ", rooms.length);
-        rooms.every(room => {
-            console.log('room.roomType ', 'room');
-            console.log('room.address', room.address, room.address !== '');
-            console.log('room.price ', room.price, room.price > 0);
-            console.log('room.bathrooms ', room.bathrooms, room.bathrooms > 0);
-            console.log('room.parkings ', room.parkings, room.parkings >= 0);
-            console.log('room.images.length ', room.images.length, room.images.length <= MAX_IMAGES);
-        });
-        console.log("isFormValid ", isFormValid);
-        setIsSubmitDisabled(!isFormValid);
-    };*/

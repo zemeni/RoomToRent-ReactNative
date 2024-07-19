@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Autocomplete Example</title>
+    <style>
+        #location {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<h2>Address Autocomplete Example</h2>
+<input id="location" type="text" placeholder="Enter Address" />
+
+<script>
+    let autocomplete;
+
+    function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('location'), {
+                types: ['geocode'],
+                componentRestrictions: { country: 'au' } // Restrict to Australia
+            }
+        );
+
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            console.log('Selected Place:', place);
+            // You can handle the selected place data here, e.g., update state or perform other actions
+            window.ReactNativeWebView.postMessage(JSON.stringify(place));
+        });
+    }
+</script>
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initAutocomplete">
+</script>
+</body>
+</html>
