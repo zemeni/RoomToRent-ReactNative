@@ -135,7 +135,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                     language: 'en',
                     components: { country: 'au' }
                 }}
-                styles={{ textInput: { flex: 1, backgroundColor: '#f8f6f6' } }}
+                styles={{ textInput: { flex: 1, backgroundColor: '#8d9dae' } }}
             />
             {validationErrors[unit.id]?.address && <Text style={styles.errorText}>Address is required.</Text>}
 
@@ -178,7 +178,12 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
             />
             {validationErrors[unit.id]?.parkings && <Text style={styles.errorText}>Number of parkings must be 0 or more.</Text>}
 
-            <Button title="Upload Images" onPress={() => pickImage(unit.id)} />
+            <TouchableOpacity
+                style={styles.button}
+                onPress={()=>pickImage(unit.id)}
+            >
+                <Text style={styles.buttonText}>{`Upload Unit Images`}</Text>
+            </TouchableOpacity>
 
             <ScrollView horizontal style={styles.imagePreviewContainer}>
                 {unit.images.map((uri) => (
@@ -207,9 +212,25 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 ListFooterComponent={
                     units.length > 0 && (
                         <View style={styles.buttonContainer}>
-                            <Button title={`Add Unit ${units.length + 1}`} onPress={addUnit} />
-                            <Button title="Submit" onPress={handleSubmit} disabled={isSubmitDisabled} />
-                            <Button title="Cancel" onPress={onCancel} />
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={addUnit}
+                            >
+                                <Text style={styles.buttonText}>{`Add Unit ${units.length + 1}`}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.button, isSubmitDisabled && styles.disabledButton]}
+                                onPress={handleSubmit}
+                                disabled={isSubmitDisabled}
+                            >
+                                <Text style={styles.buttonText}>Submit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={onCancel}
+                            >
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
                         </View>
                     )
                 }

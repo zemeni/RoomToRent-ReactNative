@@ -58,6 +58,25 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 20,
     },
+
+    button: {
+        borderRadius: 50, // This makes the button round
+        backgroundColor: '#5a87ca', // Background color
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 5,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    disabledButton: {
+        backgroundColor: '#d3d3d3', // Light gray color for disabled state
+    },
+
     noRoomsMessage: {
         marginTop: 10,
         fontStyle: 'italic',

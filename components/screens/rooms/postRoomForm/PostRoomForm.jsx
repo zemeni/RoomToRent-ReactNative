@@ -177,7 +177,12 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
             />
             {validationErrors[room.id]?.parkings && <Text style={styles.errorText}>Number of parkings must be 0 or more.</Text>}
 
-            <Button title="Upload Images" onPress={() => pickImage(room.id)} />
+            <TouchableOpacity
+                style={styles.button}
+                onPress={()=>pickImage(room.id)}
+            >
+                <Text style={styles.buttonText}>{`Upload Room Images`}</Text>
+            </TouchableOpacity>
 
             <ScrollView horizontal style={styles.imagePreviewContainer}>
                 {room.images.map((uri) => (
@@ -212,11 +217,11 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                                     handleTextChange(data.description, null, 'address');
                                 }}
                                 query={{
-                                    key: '',
+                                    key: 'AIzaSyAUsXRUXnavthEq2krHHUjQU2P_KNswKbw',
                                     language: 'en',
                                     components : {country: 'au'}
                                 }}
-                                styles={{ textInput: { flex: 1 , backgroundColor: '#f8f6f6'}, }}
+                                styles={{ textInput: { flex: 1 , backgroundColor: '#8d9dae'}}}
                             />
                         {validationErrors.address && <Text style={styles.errorText}>Address is required.</Text>}
                     </>
@@ -224,9 +229,25 @@ const PostRoomForm = ({ onSubmit, onCancel, handleRoomTypeChange }) => {
                 ListFooterComponent={
                     rooms.length > 0 && (
                         <View style={styles.buttonContainer}>
-                            <Button title={`Add Room ${rooms.length + 1}`} onPress={addRoom} />
-                            <Button title="Submit" onPress={handleSubmit} disabled={isSubmitDisabled} />
-                            <Button title="Cancel" onPress={onCancel} />
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={addRoom}
+                            >
+                                <Text style={styles.buttonText}>{`Add Room ${rooms.length + 1}`}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.button, isSubmitDisabled && styles.disabledButton]}
+                                onPress={handleSubmit}
+                                disabled={isSubmitDisabled}
+                            >
+                                <Text style={styles.buttonText}>Submit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={onCancel}
+                            >
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
                         </View>
                     )
                 }
