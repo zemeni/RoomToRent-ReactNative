@@ -105,7 +105,7 @@ const MapViewTab = ({markers, userLocation}) => {
                 mapType={mapType === 'standard' ? 'standard' : mapType === 'satellite' ? 'satellite' : 'hybrid'}
                 onPress={handleMapPress}
             >
-                {markerPosition && (
+                {/* DON'T REMOVE {markerPosition && (
                     <>
                         <Marker
                             coordinate={markerPosition}
@@ -120,7 +120,7 @@ const MapViewTab = ({markers, userLocation}) => {
                             fillColor={'rgba(230,238,255,0.5)'}
                         />
                     </>
-                )}
+                )}*/}
                 {markers.map(marker => (
                     <Marker
                         key={marker.id}
@@ -152,7 +152,7 @@ const MapViewTab = ({markers, userLocation}) => {
             <Modal visible={isFormVisible} animationType="slide">
                 <PostForm onSubmit={handleFormSubmit} onCancel={handleFormCancel}/>
             </Modal>
-            {markerPosition && (
+            {/* DON'T REMOVE {markerPosition && (
                 <View style={styles.sliderContainer}>
                     <Slider
                         style={styles.slider}
@@ -168,7 +168,7 @@ const MapViewTab = ({markers, userLocation}) => {
                         <Text style={styles.searchButtonText}>Search</Text>
                     </TouchableOpacity>
                 </View>
-            )}
+            )}*/}
         </View>
     );
 };
