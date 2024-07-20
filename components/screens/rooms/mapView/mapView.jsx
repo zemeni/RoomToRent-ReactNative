@@ -147,7 +147,7 @@ const MapViewTab = ({markers, userLocation}) => {
                 </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.postButton} onPress={handlePostRoom}>
-                <Text style={styles.postButtonText}>Post Room</Text>
+                <Text style={styles.postButtonText}>Post Room/Units</Text>
             </TouchableOpacity>
             <Modal visible={isFormVisible} animationType="slide">
                 <PostForm onSubmit={handleFormSubmit} onCancel={handleFormCancel}/>

@@ -20,4 +20,15 @@ export const styles = StyleSheet.create({
     backgroundColor: "#fff",
     color: "red",
   },
+  pickerContainer: {
+    marginTop: 35,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    marginBottom: 12,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
 });

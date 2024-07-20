@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         top: 50,
         left: 20,
-        backgroundColor: '#072c7e',
+        backgroundColor: '#496ec1',
         padding: 10,
         borderRadius: 5,
     },
