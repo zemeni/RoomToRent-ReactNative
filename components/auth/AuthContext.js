@@ -35,29 +35,65 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const user = users.find(u => u.email === email && u.password === password);
-        if (user) {
-            setUser(user);
-            console.log("successful login");
+        console.log("Attempting login with email:", email);
 
-            // await AsyncStorage.setItem('user', JSON.stringify(user));
-            // await AsyncStorage.setItem('loginTime', new Date().getTime().toString());
+        try {
+            const response = await fetch('http://192.168.1.108:4000/api/profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error("Login failed:", data.message || response.statusText);
+                return false;
+            }
+
+            console.log("Login successful, user data:", data);
+            setUser(data);
             return true;
+        } catch (error) {
+            console.error('Login error:', error);
+            return false;
         }
-        return false;
     };
+
 
     const logout = async () => {
         setUser(null);
-        await AsyncStorage.removeItem('user');
-        await AsyncStorage.removeItem('loginTime');
     };
 
     const signUp = async (newUser) => {
-        const updatedUsers = [...users, newUser];
-        setUsers(updatedUsers);
-        await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
+        console.log("Attempting signup for:", newUser);
+
+        try {
+            const response = await fetch('http://192.168.1.108:4000/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newUser),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error("Signup failed:", data.message || response.statusText);
+                return false;
+            }
+
+            console.log("Signup successful, user data:", data);
+            return true;
+        } catch (error) {
+            console.error('Signup error:', error);
+            return false;
+        }
     };
+
 
     return (
         <AuthContext.Provider value={{ user, login, logout, signUp }}>

@@ -11,6 +11,7 @@ import SignUpScreen from "./components/auth/signUpScreen";
 import { useContext, useEffect } from "react";
 import { storeAddresses, removeAddresses, logAsyncStorage, removeData } from "./service/utils";
 import DetailsPage from "./components/screens/rooms/listView/detailsPage";
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,7 @@ export default function App() {
             <PaperProvider>
                 <NavigationContainer>
                     <AppNavigator />
+                    <Toast ref={ref => Toast.setRef(ref)} />
                 </NavigationContainer>
             </PaperProvider>
         </AuthProvider>

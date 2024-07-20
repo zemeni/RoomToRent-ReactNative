@@ -5,15 +5,16 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
 import { Picker } from '@react-native-picker/picker';
 import styles from './signUp.style';
+import Toast from 'react-native-toast-message';
 
 const SignUpScreen = () => {
     const { signUp } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
     const [state, setState] = useState('NSW');
     const [isValid, setIsValid] = useState(false);
     const [errors, setErrors] = useState({});
@@ -23,7 +24,7 @@ const SignUpScreen = () => {
 
     useEffect(() => {
         validateForm();
-    }, [email, password, confirmPassword, firstName, lastName, phoneNumber]);
+    }, [email, password, confirmPassword, firstname, lastname, phone]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -40,16 +41,16 @@ const SignUpScreen = () => {
             newErrors.confirmPassword = 'Passwords do not match';
         }
 
-        if (!firstName) {
-            newErrors.firstName = 'Please enter your first name';
+        if (!firstname) {
+            newErrors.firstname = 'Please enter your first name';
         }
 
-        if (!lastName) {
-            newErrors.lastName = 'Please enter your last name';
+        if (!lastname) {
+            newErrors.lastname = 'Please enter your last name';
         }
 
-        if (!/^\d{10}$/.test(phoneNumber)) {
-            newErrors.phoneNumber = 'Please enter a valid 10-digit phone number';
+        if (!/^\d{10}$/.test(phone)) {
+            newErrors.phone = 'Please enter a valid 10-digit phone number';
         }
 
         setErrors(newErrors);
@@ -57,17 +58,36 @@ const SignUpScreen = () => {
     };
 
     const handleSignUp = async () => {
-        const newUser = {
-            email,
-            password,
-            firstName,
-            lastName,
-            phoneNumber,
-            state,
-        };
+        try {
+            const newUser = {
+                email,
+                password,
+                firstname,
+                lastname,
+                phone,
+                state,
+            };
 
-        await signUp(newUser);
-        navigation.navigate('Login', { fromScreen });
+            await signUp(newUser);
+
+            Toast.show({
+                type: 'success',
+                position: 'bottom',
+                text1: 'Sign Up Successful',
+                text2: 'You can now log in with your credentials.',
+                visibilityTime: 3000,
+            });
+
+            navigation.navigate('Login', { fromScreen });
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                position: 'top',
+                text1: 'Sign Up Failed',
+                text2: 'An error occurred during sign up. Please try again.',
+                visibilityTime: 3000,
+            });
+        }
     };
 
     return (
@@ -77,17 +97,17 @@ const SignUpScreen = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="First Name"
-                    value={firstName}
+                    value={firstname}
                     onChangeText={setFirstName}
                 />
-                {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+                {errors.firstname && <Text style={styles.errorText}>{errors.firstname}</Text>}
                 <TextInput
                     style={styles.input}
                     placeholder="Last Name"
-                    value={lastName}
+                    value={lastname}
                     onChangeText={setLastName}
                 />
-                {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+                {errors.lastname && <Text style={styles.errorText}>{errors.lastname}</Text>}
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
@@ -99,11 +119,11 @@ const SignUpScreen = () => {
                 <TextInput
                     style={styles.input}
                     placeholder="Phone Number"
-                    value={phoneNumber}
-                    onChangeText={setPhoneNumber}
+                    value={phone}
+                    onChangeText={setPhone}
                     keyboardType="phone-pad"
                 />
-                {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
+                {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
                 <TextInput
                     style={styles.input}
                     placeholder="Password"

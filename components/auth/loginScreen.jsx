@@ -4,6 +4,7 @@ import { View, Text, Button, Alert, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
+import Toast from "react-native-toast-message";
 
 const LoginScreen = () => {
     const [username, setUsername] = useState('');
@@ -14,6 +15,13 @@ const LoginScreen = () => {
     const handleLogin = async () => {
         const success = await login(username, password);
         if (success) {
+            Toast.show({
+                type: 'success',
+                position: 'bottom',
+                text1: `Login Successful`,
+                text2: 'Explore RoomToRent',
+                visibilityTime: 3000,
+            });
             navigation.navigate('Main');
         } else {
             Alert.alert('Login failed', 'Invalid username or password');

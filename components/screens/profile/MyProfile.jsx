@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthContext } from "../../auth/AuthContext";
 import { useNavigation } from "@react-navigation/native";
@@ -12,6 +12,7 @@ const MyProfile = () => {
 
     const handleLogout = async () => {
         await logout();
+        navigation.navigate('Login');
     };
 
     // Dummy data for rooms and units
@@ -25,15 +26,41 @@ const MyProfile = () => {
         { id: '2', name: 'Unit 202', location: 'Perth, WA' },
     ];
 
-    const renderItem = ({ item }) => (
-        <View style={styles.itemContainer}>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemLocation}>{item.location}</Text>
-        </View>
-    );
+    // Combine sections into one list
+    const combinedData = [
+        { type: 'userInfo', data: user },
+        { type: 'rooms', data: rooms },
+        { type: 'units', data: units },
+    ];
+
+    const renderItem = ({ item }) => {
+        if (item.type === 'rooms' || item.type === 'units') {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>{item.type === 'rooms' ? 'Rooms Posted' : 'Units Posted'}</Text>
+                    <FlatList
+                        data={item.data}
+                        renderItem={({ item }) => (
+                            <View style={styles.itemContainer}>
+                                <Text style={styles.itemName}>{item.name}</Text>
+                                <Text style={styles.itemLocation}>{item.location}</Text>
+                            </View>
+                        )}
+                        keyExtractor={(item) => item.id}
+                        style={styles.list}
+                    />
+                </View>
+            );
+        }
+
+        return null;
+    };
 
     return (
-        <ScrollView
+        <FlatList
+            data={combinedData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={[
                 styles.container,
                 {
@@ -43,53 +70,29 @@ const MyProfile = () => {
                     paddingRight: inset.right,
                 },
             ]}
-        >
-            {user ? (
-                <>
-                    <View style={styles.userInfo}>
-                        <Text style={styles.userName}>Name: {user.firstName} {user.lastName}</Text>
-                        <Text style={styles.userEmail}>Email: {user.email}</Text>
-                        <Text style={styles.userPhone}>Phone: {user.phoneNumber}</Text>
-                    </View>
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Rooms Posted</Text>
-                        <FlatList
-                            data={rooms}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.id}
-                            style={styles.list}
-                        />
-                    </View>
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Units Posted</Text>
-                        <FlatList
-                            data={units}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.id}
-                            style={styles.list}
-                        />
-                    </View>
+            ListFooterComponent={
+                user ? (
                     <TouchableOpacity style={styles.button} onPress={handleLogout}>
                         <Text style={styles.buttonText}>Logout</Text>
                     </TouchableOpacity>
-                </>
-            ) : (
-                <>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => navigation.navigate("Login", { fromScreen: "Profile" })}
-                    >
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => navigation.navigate("SignUp", { fromScreen: "Profile" })}
-                    >
-                        <Text style={styles.buttonText}>Sign Up</Text>
-                    </TouchableOpacity>
-                </>
-            )}
-        </ScrollView>
+                ) : (
+                    <>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => navigation.navigate("Login", { fromScreen: "Profile" })}
+                        >
+                            <Text style={styles.buttonText}>Login</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => navigation.navigate("SignUp", { fromScreen: "Profile" })}
+                        >
+                            <Text style={styles.buttonText}>Sign Up</Text>
+                        </TouchableOpacity>
+                    </>
+                )
+            }
+        />
     );
 };
 
