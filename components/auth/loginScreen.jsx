@@ -1,24 +1,20 @@
 // LoginScreen.js
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, Button, Alert, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import {AuthContext} from "./AuthContext";
-
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from './AuthContext';
 
 const LoginScreen = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
-    const route = useRoute();
-    const fromScreen = route.params?.fromScreen;
     const { login } = useContext(AuthContext);
 
     const handleLogin = async () => {
         const success = await login(username, password);
         if (success) {
-            navigation.navigate(fromScreen);
+            navigation.navigate('Main');
         } else {
             Alert.alert('Login failed', 'Invalid username or password');
         }
@@ -43,12 +39,11 @@ const LoginScreen = () => {
             <View style={styles.buttonContainer}>
                 <Button title="Login" onPress={handleLogin} />
                 <View style={styles.buttonSpacer} />
-                <Button title="Sign Up" onPress={() => navigation.navigate('SignUp', { fromScreen })} />
+                <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
             </View>
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {

@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import {View, Text, Button, Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {AuthContext} from '../../../service/AuthContext'; // Adjust the import based on your context location
+import {AuthContext} from '../../auth/AuthContext'; // Adjust the import based on your context location
 
 const Sports = () => {
     const navigation = useNavigation();

@@ -20,6 +20,7 @@ const Room = () => {
     const [markers, setMarkers] = useState([]);
     const [filtersApplied, setFiltersApplied] = useState(false);
     const [location, setLocation] = useState(null);
+    const [rooms, setRooms] = useState([]);
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -40,6 +41,7 @@ const Room = () => {
         };
 
         getLocation();
+        getRooms();
     }, []);
 
     useEffect(() => {
@@ -77,6 +79,15 @@ const Room = () => {
         setFiltersApplied(true); // Set filtersApplied to true after applying filters
     };
 
+    const getRooms = async () => {
+        const rooms = await AsyncStorage.getItem('roomData');
+        console.log('rooms ',rooms);
+        if (rooms !== null) {
+            const parsedAddresses = JSON.parse(rooms);
+            setRooms(parsedAddresses);
+        }
+    }
+
     console.log("room is rendered, location is ", location);
 
     return (
@@ -108,7 +119,7 @@ const Room = () => {
                     {props => <MapViewTab {...props} markers={markers} userLocation={location} />}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
-                    {props => <ListView {...props} markers={markers} userLocation={location} />}
+                    {props => <ListView {...props} />}
                 </TopTab.Screen>
             </TopTab.Navigator>
         </SafeAreaView>

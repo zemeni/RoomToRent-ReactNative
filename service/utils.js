@@ -12,7 +12,7 @@ export const storeAddresses = async (addresses) => {
 };
 
 // Function to remove an item from AsyncStorage
-const removeData = async (key) => {
+export const removeData = async (key) => {
     try {
         await AsyncStorage.removeItem(key);
         console.log(`Successfully removed item with key: ${key}`);

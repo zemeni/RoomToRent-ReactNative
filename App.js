@@ -4,14 +4,35 @@ import { PaperProvider } from "react-native-paper";
 import { name as appName } from './app.json';
 import { AppRegistry } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { AuthProvider } from './service/AuthContext';
+import { AuthProvider, AuthContext } from './components/auth/AuthContext';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './service/loginScreen';
-import SignUpScreen from "./service/signUpScreen";
-import {useEffect} from "react";
-import {storeAddresses, removeAddresses, logAsyncStorage} from "./service/utils";
+import LoginScreen from './components/auth/loginScreen';
+import SignUpScreen from "./components/auth/signUpScreen";
+import { useContext, useEffect } from "react";
+import { storeAddresses, removeAddresses, logAsyncStorage, removeData } from "./service/utils";
+import DetailsPage from "./components/screens/rooms/listView/detailsPage";
 
 const Stack = createStackNavigator();
+
+function AppNavigator() {
+    const { user } = useContext(AuthContext);
+
+    return (
+        <Stack.Navigator>
+            {user ? (
+                <>
+                    <Stack.Screen name="Main" component={Navbar} options={{ headerShown: false }} />
+                    <Stack.Screen name="DetailsPage" component={DetailsPage} />
+                </>
+            ) : (
+                <>
+                    <Stack.Screen name="Login" component={LoginScreen} />
+                    <Stack.Screen name="SignUp" component={SignUpScreen} />
+                </>
+            )}
+        </Stack.Navigator>
+    );
+}
 
 export default function App() {
     const addresses = [
@@ -21,28 +42,25 @@ export default function App() {
         "2 Alice St, Plympton SA 5038",
         "65 West St, Semaphore Park SA 5019"
     ];
+
     useEffect(() => {
         // removeAddresses();
         storeAddresses(addresses);
     }, []);
 
-
     useEffect(() => {
         logAsyncStorage();
     }, []);
+
     return (
         <AuthProvider>
             <PaperProvider>
                 <NavigationContainer>
-                    <Stack.Navigator>
-                        <Stack.Screen name="Main" component={Navbar} options={{ headerShown: false }} />
-                        <Stack.Screen name="Login" component={LoginScreen} />
-                        <Stack.Screen name="SignUp" component={SignUpScreen} />
-                    </Stack.Navigator>
+                    <AppNavigator />
                 </NavigationContainer>
             </PaperProvider>
         </AuthProvider>
     );
 }
 
-AppRegistry.registerComponent(appName, () => App)
+AppRegistry.registerComponent(appName, () => App);

@@ -4,7 +4,7 @@ import MapView, {Circle, Marker} from 'react-native-maps';
 import {FontAwesome, MaterialIcons, FontAwesome5, FontAwesome6} from '@expo/vector-icons'; // Import icons
 import {styles} from './mapView.style';
 
-import {AuthContext} from '../../../../service/AuthContext';
+import {AuthContext} from '../../../auth/AuthContext';
 import {useNavigation} from '@react-navigation/native';
 import PostForm from "../postForm/postForm";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import the form component

@@ -1,73 +1,71 @@
-import React, { useRef, useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Dimensions,
-  TouchableWithoutFeedback,
-} from "react-native";
-import { styles } from "./listView.style";
-import BottomSheet from "react-native-simple-bottom-sheet";
-import ItemCard from "../../../cards/itemcard";
-import { useFocusEffect } from "@react-navigation/native";
+import React from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Modal, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const ListView = ({ markers }) => {
-  console.log("list view is rendered");
-  const bottomSheetRef = useRef(null);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const { height: screenHeight } = Dimensions.get("window");
-  const bottomSheetHeight = screenHeight * 0.65;
-  useFocusEffect(
-    React.useCallback(() => {
-      return () => {
-        bottomSheetRef?.current && bottomSheetRef?.current?.togglePanel();
-      };
-    }, [])
+const ListView = () => {
+  const navigation = useNavigation();
+
+  // Dummy data for rooms
+  const rooms = [
+    {
+      id: '1',
+      address: '123 Fake St, Melbourne, VIC',
+      price: 1500,
+      description: 'A cozy room in a great location.',
+      bathrooms: 1,
+      parkings: 1,
+      images: [
+        'https://via.placeholder.com/150',
+        'https://via.placeholder.com/150'
+      ]
+    },
+    {
+      id: '2',
+      address: '456 Another St, Sydney, NSW',
+      price: 2000,
+      description: 'Spacious room with modern amenities.',
+      bathrooms: 2,
+      parkings: 2,
+      images: [
+        'https://via.placeholder.com/150',
+        'https://via.placeholder.com/150'
+      ]
+    },
+    // Add more rooms as needed
+  ];
+
+  const handlePress = (room) => {
+    navigation.navigate('DetailsPage', { room });
+  };
+
+  const renderItem = ({ item }) => (
+      <TouchableOpacity onPress={() => handlePress(item)} style={styles.itemContainer}>
+        <Text style={styles.itemText}>{item.address}</Text>
+      </TouchableOpacity>
   );
-  const handlePress = (item) => {
-    setSelectedItem(item);
-    bottomSheetRef?.current?.togglePanel();
-  };
-  const handleOutsidePress = () => {
-    bottomSheetRef?.current && bottomSheetRef?.current?.togglePanel();
-  };
+
   return (
-    <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <View>
-        <FlatList
-          data={markers}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <ItemCard
-              title={item.title}
-              description={item.description}
-              phone={item.phone}
-              price={item.price}
-              date={item.date}
-              onPress={() => handlePress(item)}
-            />
-          )}
-        />
-        <BottomSheet
-          ref={bottomSheetRef}
-          isOpen={false}
-          sliderMinHeight={0}
-          sliderMaxHeight={bottomSheetHeight}
-          animationDuration={200}
-        >
-          <TouchableWithoutFeedback>
-            <View style={styles.bottomSheetContainer}>
-              {selectedItem && (
-                <Text style={[styles.sheetText, { height: bottomSheetHeight }]}>
-                  {selectedItem.title}
-                </Text>
-              )}
-            </View>
-          </TouchableWithoutFeedback>
-        </BottomSheet>
-      </View>
-    </TouchableWithoutFeedback>
+      <FlatList
+          data={rooms}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContainer}
+      />
   );
 };
+
+const styles = StyleSheet.create({
+  listContainer: {
+    padding: 10,
+  },
+  itemContainer: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  itemText: {
+    fontSize: 18,
+  },
+});
 
 export default ListView;

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { View, Text, Button } from "react-native";
 import { style } from "./myprofile.style";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AuthContext } from "../../../service/AuthContext"; // Adjust the import path to your AuthContext
+import { AuthContext } from "../../auth/AuthContext"; // Adjust the import path to your AuthContext
 import { useNavigation } from "@react-navigation/native";
 const MyProfile = () => {
   const inset = useSafeAreaInsets();
