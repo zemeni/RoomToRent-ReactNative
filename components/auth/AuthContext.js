@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
         console.log("Attempting login with email:", email);
 
         try {
-            const response = await fetch('http://192.168.1.108:4000/api/profile', {
+            const response = await fetch('http://192.168.1.108:4000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
