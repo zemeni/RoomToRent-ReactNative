@@ -1,22 +1,42 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, Button, Alert, StyleSheet } from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {View, Text, Button, Alert, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
 import Toast from "react-native-toast-message";
+import {styles} from "./login.style";
 
 const LoginScreen = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [isValid, setIsValid] = useState(false);
     const navigation = useNavigation();
-    const { login } = useContext(AuthContext);
+    const { login, user } = useContext(AuthContext);
+
+    useEffect(() => {
+        validateForm();
+    }, [username, password]);
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!username) {
+            newErrors.username = 'Please enter a valid email';
+        }
+
+        if (!password.length < 2) {
+            newErrors.password = 'Password must be at least 6 characters';
+        }
+
+        setIsValid(Object.keys(newErrors).length === 0);
+    };
 
     const handleLogin = async () => {
         const success = await login(username, password);
         if (success) {
             Toast.show({
                 type: 'success',
-                position: 'bottom',
+                position: 'top',
                 text1: `Login Successful`,
                 text2: 'Explore RoomToRent',
                 visibilityTime: 3000,
@@ -28,57 +48,36 @@ const LoginScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            <View style={styles.buttonContainer}>
-                <Button title="Login" onPress={handleLogin} />
-                <View style={styles.buttonSpacer} />
-                <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={username}
+                    onChangeText={setUsername}
+                    keyboardType="email-address"
+                />
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <TouchableOpacity
+                    style={[styles.button, !isValid && styles.buttonDisabled]}
+                    onPress={handleLogin}
+                    disabled={!isValid}
+                >
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignUp')}>
+                    <Text style={styles.buttonText}>Doesn't have account? Signup</Text>
+                </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        marginBottom: 20,
-    },
-    input: {
-        height: 40,
-        width: '100%',
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 20,
-        paddingHorizontal: 10,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-    buttonSpacer: {
-        width: 10,
-    },
-});
 
 export default LoginScreen;
