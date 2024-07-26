@@ -24,7 +24,7 @@ const LoginScreen = () => {
             newErrors.username = 'Please enter a valid email';
         }
 
-        if (!password.length < 2) {
+        if (password.length < 5) {
             newErrors.password = 'Password must be at least 6 characters';
         }
 
@@ -70,7 +70,7 @@ const LoginScreen = () => {
                     onPress={handleLogin}
                     disabled={!isValid}
                 >
-                    <Text style={styles.buttonText}>Sign Up</Text>
+                    <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignUp')}>
                     <Text style={styles.buttonText}>Doesn't have account? Signup</Text>
