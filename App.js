@@ -58,7 +58,7 @@ export default function App() {
             <PaperProvider>
                 <NavigationContainer>
                     <AppNavigator />
-                    <Toast ref={ref => Toast.setRef(ref)} />
+                    <Toast refs={refs => Toast.setRef(refs)} />
                 </NavigationContainer>
             </PaperProvider>
         </AuthProvider>

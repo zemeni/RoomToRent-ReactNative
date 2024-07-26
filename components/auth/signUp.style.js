@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginTop: 10,
+        marginTop: 15,
         alignItems: 'center',
     },
     buttonDisabled: {

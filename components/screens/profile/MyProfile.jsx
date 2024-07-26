@@ -1,46 +1,59 @@
-import React, { useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AuthContext } from "../../auth/AuthContext";
-import { useNavigation } from "@react-navigation/native";
+import React, {useContext} from "react";
+import {View, Text, FlatList, TouchableOpacity, StyleSheet, Alert} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {AuthContext} from "../../auth/AuthContext";
+import {useNavigation} from "@react-navigation/native";
 import {styles} from "./myprofile.style";
+import Toast from "react-native-toast-message";
 
 const MyProfile = () => {
     const inset = useSafeAreaInsets();
-    const { user, logout } = useContext(AuthContext);
+    const {user, logout} = useContext(AuthContext);
     const navigation = useNavigation();
 
     const handleLogout = async () => {
         await logout();
         navigation.navigate('Login');
+        Toast.show({
+            type: 'success',
+            position: 'bottom',
+            text1: `Logged out`,
+            text2: 'Explore RoomToRent',
+            visibilityTime: 3000,
+        });
     };
+
+/*    const handleLogout = async () => {
+        await logout();
+        navigation.navigate('Login');
+    };*/
 
     // Dummy data for rooms and units
     const rooms = [
-        { id: '1', name: 'Room A', location: 'Sydney, NSW' },
-        { id: '2', name: 'Room B', location: 'Melbourne, VIC' },
+        {id: '1', name: 'Room A', location: 'Sydney, NSW'},
+        {id: '2', name: 'Room B', location: 'Melbourne, VIC'},
     ];
 
     const units = [
-        { id: '1', name: 'Unit 101', location: 'Brisbane, QLD' },
-        { id: '2', name: 'Unit 202', location: 'Perth, WA' },
+        {id: '1', name: 'Unit 101', location: 'Brisbane, QLD'},
+        {id: '2', name: 'Unit 202', location: 'Perth, WA'},
     ];
 
     // Combine sections into one list
     const combinedData = [
-        { type: 'userInfo', data: user },
-        { type: 'rooms', data: rooms },
-        { type: 'units', data: units },
+        {type: 'userInfo', data: user},
+        {type: 'rooms', data: rooms},
+        {type: 'units', data: units},
     ];
 
-    const renderItem = ({ item }) => {
+    const renderItem = ({item}) => {
         if (item.type === 'rooms' || item.type === 'units') {
             return (
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>{item.type === 'rooms' ? 'Rooms Posted' : 'Units Posted'}</Text>
                     <FlatList
                         data={item.data}
-                        renderItem={({ item }) => (
+                        renderItem={({item}) => (
                             <View style={styles.itemContainer}>
                                 <Text style={styles.itemName}>{item.name}</Text>
                                 <Text style={styles.itemLocation}>{item.location}</Text>
@@ -79,13 +92,13 @@ const MyProfile = () => {
                     <>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={() => navigation.navigate("Login", { fromScreen: "Profile" })}
+                            onPress={() => navigation.navigate("Login", {fromScreen: "Profile"})}
                         >
                             <Text style={styles.buttonText}>Login</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={() => navigation.navigate("SignUp", { fromScreen: "Profile" })}
+                            onPress={() => navigation.navigate("SignUp", {fromScreen: "Profile"})}
                         >
                             <Text style={styles.buttonText}>Sign Up</Text>
                         </TouchableOpacity>
