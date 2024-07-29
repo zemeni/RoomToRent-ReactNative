@@ -9,7 +9,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './components/auth/loginScreen';
 import SignUpScreen from "./components/auth/signUpScreen";
 import { useContext, useEffect } from "react";
-import { storeAddresses, removeAddresses, logAsyncStorage, removeData } from "./service/utils";
 import DetailsPage from "./components/screens/rooms/listView/detailsPage";
 import Toast from 'react-native-toast-message';
 import MarkerDetailsPage from "./components/screens/rooms/mapView/markerDetailsPage";
@@ -38,23 +37,6 @@ function AppNavigator() {
 }
 
 export default function App() {
-    const addresses = [
-        "16 Pankina Grove, Marion 5043, SA",
-        "25 Boyle St, Marion SA 5043",
-        "1/214 findon rd, findon SA 5023",
-        "2 Alice St, Plympton SA 5038",
-        "65 West St, Semaphore Park SA 5019"
-    ];
-
-    useEffect(() => {
-        // removeAddresses();
-        storeAddresses(addresses);
-    }, []);
-
-    useEffect(() => {
-        logAsyncStorage();
-    }, []);
-
     return (
         <AuthProvider>
             <PaperProvider>
