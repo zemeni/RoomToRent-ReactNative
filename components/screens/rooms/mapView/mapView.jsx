@@ -10,6 +10,8 @@ import PostForm from "../postForm/postForm";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import the form component
 
 import Slider from "@react-native-community/slider";
+import Toast from "react-native-toast-message";
+import CustomMarker from "./customMarker";
 
 
 const MapViewTab = ({markers, userLocation}) => {
@@ -53,11 +55,44 @@ const MapViewTab = ({markers, userLocation}) => {
     const handleFormSubmit = async (formData) => {
         console.log('Form Data:', formData);
         setIsFormVisible(false);
+        console.log("token is ", user.token);
         try {
-            await AsyncStorage.setItem('roomData', JSON.stringify(formData));
-            console.log("Data Saved Successfully");
+            const response = await fetch('http://192.168.1.108:4000/api/rooms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + user.token
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            console.log("response is ", data);
+
+            if (!response.ok) {
+                console.error("Server error:", data.message || response.statusText);
+                return false;
+            }
+
+            Toast.show({
+                type: 'success',
+                position: 'top',
+                text1: `Room Added Successfully`,
+                text2: 'Check your profile for your entries',
+                visibilityTime: 5000,
+            });
+            return true;
         } catch (error) {
-            console.error('Failed to save data', error);
+            console.error('Signup error:', error);
+            Toast.show({
+                type: 'error',
+                position: 'top',
+                text1: 'Server Error',
+                text2: 'Try again next time',
+                visibilityTime: 5000,
+            });
+            return false;
         }
     };
 
@@ -97,8 +132,8 @@ const MapViewTab = ({markers, userLocation}) => {
                 initialRegion={userLocation ? {
                     latitude: userLocation.latitude,
                     longitude: userLocation.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
                 } : null}
                 showsUserLocation={true}
                 showsMyLocationButton={false}
@@ -126,8 +161,10 @@ const MapViewTab = ({markers, userLocation}) => {
                         key={marker.id}
                         coordinate={marker.coordinate}
                         title={marker.title}
-                        description={marker.description}
-                    />
+                        // description={marker.description}
+                    >
+                        <CustomMarker price={marker.title.split(' ')[1]} />
+                    </Marker>
                 ))}
             </MapView>
             <View style={styles.topRight}>

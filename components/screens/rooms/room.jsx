@@ -1,3 +1,5 @@
+// http://192.168.1.108:4000/api/rooms
+
 import React, { useState, useEffect, useContext } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, SafeAreaView, Alert } from 'react-native';
@@ -9,6 +11,7 @@ import ListView from './listView/listView';
 import { styles } from './room.style';
 import getCoordinatesFromAddress from '../../../service/geoCordinateConverter';
 import { AuthContext } from '../../auth/AuthContext';
+import axios from 'axios';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -33,32 +36,30 @@ const Room = () => {
             setLocation({ latitude: coords.latitude, longitude: coords.longitude });
         };
 
-        getLocation();
-        fetchMarkers();
-    }, []);
+        const fetchRoomData = async () => {
+            try {
+                const response = await axios.get('http://192.168.1.108:4000/api/rooms'); // Replace with your IP address
+                console.log("rooms response is ", response.data);
 
-    const fetchMarkers = async () => {
-        try {
-            const storedAddresses = await AsyncStorage.getItem('ADDRESSES_KEY');
-            if (storedAddresses !== null) {
-                const parsedAddresses = JSON.parse(storedAddresses);
-                const markerPromises = parsedAddresses.map(async (address, index) => {
-                    const coords = await getCoordinatesFromAddress(address);
-                    return coords ? {
-                        id: index.toString(),
-                        coordinate: coords,
-                        title: `Marker ${index + 1}`,
-                        description: address,
-                    } : null;
-                });
+                const fetchedMarkers = response.data.map((room, index) => ({
+                    id: room.id.toString(),
+                    coordinate: {
+                        latitude: room.latitude,
+                        longitude: room.longitude
+                    },
+                    title: `Price: ${room.price}`,
+                    // description: room.description
+                }));
 
-                const fetchedMarkers = await Promise.all(markerPromises);
-                setMarkers(fetchedMarkers.filter(marker => marker !== null));
+                setMarkers(fetchedMarkers);
+            } catch (error) {
+                console.error("Error fetching rooms data: ", error.message);
             }
-        } catch (error) {
-            console.error('Error fetching addresses:', error);
-        }
-    };
+        };
+
+        getLocation();
+        fetchRoomData();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>

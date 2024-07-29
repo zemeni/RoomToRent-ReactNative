@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useContext} from 'react';
 import {
     View,
     Text,
@@ -17,6 +17,8 @@ import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete"
 import {Picker} from "@react-native-picker/picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import axios from "axios";
+import {AuthContext} from "../../../auth/AuthContext";
 
 
 const DEFAULT_ROOM = {
@@ -24,7 +26,8 @@ const DEFAULT_ROOM = {
     type: 'room',
     price: 0,
     roomType: 'Single',
-    including: 'Yes',
+    including: '1',
+    furnished: '1',
     description: '',
     bathrooms: 0,
     parkings: 0,
@@ -104,7 +107,7 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
         } else {
             const updatedRooms = rooms.map(room => (room.id === roomId ? {...room, [field]: value} : room));
             setRooms(updatedRooms);
-            if(field === 'startDate') {
+            if (field === 'startDate') {
                 setDatePickerVisibility(false);
             }
         }
@@ -142,7 +145,7 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
 
     const addRoom = () => {
         const newRoomId = rooms.length + 1;
-        const newRoom = {id: newRoomId, type: 'room', price: 0, description: '', bathrooms: 0, parkings: 0, images: []};
+        const newRoom = {id: newRoomId, type: 'room', price: 0, including: '1', roomType:'Single', furnished: '1', description: '', bathrooms: 0, parkings: 0, images: []};
         setRooms([...rooms, newRoom]);
     };
 
@@ -156,6 +159,7 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
             address: address,
             ...room
         }));
+        console.log("before submitting ....", updatedRooms);
         onSubmit(updatedRooms);
     };
 
@@ -186,8 +190,8 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
                             style={styles.picker}
                             onValueChange={(value) => handleTextChange(value, room.id, 'including')}
                         >
-                            <Picker.Item label="Yes" value="Yes" />
-                            <Picker.Item label="No" value="No" />
+                            <Picker.Item label="Yes" value="1"/>
+                            <Picker.Item label="No" value="0"/>
                         </Picker>
                     </View>
                 </View>
@@ -195,16 +199,34 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
             {validationErrors[room.id]?.price &&
                 <Text style={styles.errorText}>Price must be greater than 0.</Text>}
 
-            <Text style={styles.label}>Room Type *</Text>
-            <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={room.roomType}
-                    style={styles.picker}
-                    onValueChange={(value) => handleTextChange(value, room.id, 'roomType')}
-                >
-                    <Picker.Item label="Single" value="Single"/>
-                    <Picker.Item label="Double" value="Double"/>
-                </Picker>
+            <View style={styles.rowContainer}>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Room Type *</Text>
+                    <View style={styles.pickerContainer}>
+                        <Picker
+                            selectedValue={room.roomType}
+                            style={styles.picker}
+                            onValueChange={(value) => handleTextChange(value, room.id, 'roomType')}
+                        >
+                            <Picker.Item label="Single" value="Single"/>
+                            <Picker.Item label="Double" value="Double"/>
+                        </Picker>
+                    </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Furnished *</Text>
+                    <View style={styles.pickerContainer}>
+                        <Picker
+                            selectedValue={room.furnished}
+                            style={styles.picker}
+                            onValueChange={(value) => handleTextChange(value, room.id, 'furnished')}
+                        >
+                            <Picker.Item label="Yes" value="1"/>
+                            <Picker.Item label="No" value="0"/>
+                        </Picker>
+                    </View>
+                </View>
             </View>
 
             <Text style={styles.label}>Description</Text>
@@ -242,14 +264,14 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
             <Text style={styles.label}>Available from *</Text>
             <TouchableOpacity
                 style={[styles.input, styles.datePickerInput]}
-                onPress={()=> showDatePicker()}
-                >
-                <Text>{room.startDate ? room.startDate.toLocaleDateString(): 'Select Date'}</Text>
+                onPress={() => showDatePicker()}
+            >
+                <Text>{room.startDate ? room.startDate.toLocaleDateString() : 'Select Date'}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
-                onConfirm={(startDate)=> handleTextChange(startDate, room.id, 'startDate')}
+                onConfirm={(startDate) => handleTextChange(startDate, room.id, 'startDate')}
                 onCancel={() => setDatePickerVisibility(false)}
             />
             {validationErrors[room.id]?.startDate &&
@@ -295,7 +317,7 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
                                 handleTextChange(data.description, null, 'address');
                             }}
                             query={{
-                                key: 'AIzaSyCUD4zx3oDyTCAISXtANyF-j8s2ayPHfSs',
+                                key: '',
                                 language: 'en',
                                 components: {country: 'au'}
                             }}
