@@ -121,6 +121,10 @@ const MapViewTab = ({markers, userLocation}) => {
         console.log("search params is ", searchParams);
     };
 
+    const handleMarkerPress = (marker) => {
+        navigation.navigate('MarkerDetailsPage', {roomId: marker.id})
+    }
+
 
     console.log("rendering map view page");
 
@@ -162,6 +166,7 @@ const MapViewTab = ({markers, userLocation}) => {
                         coordinate={marker.coordinate}
                         title={marker.title}
                         // description={marker.description}
+                        onPress={() => handleMarkerPress(marker)}
                     >
                         <CustomMarker price={marker.title.split(' ')[1]} />
                     </Marker>

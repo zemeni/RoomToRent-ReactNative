@@ -1,15 +1,11 @@
-// http://192.168.1.108:4000/api/rooms
-
 import React, { useState, useEffect, useContext } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, SafeAreaView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as Location from 'expo-location';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MapViewTab from './mapView/mapView';
 import ListView from './listView/listView';
 import { styles } from './room.style';
-import getCoordinatesFromAddress from '../../../service/geoCordinateConverter';
 import { AuthContext } from '../../auth/AuthContext';
 import axios from 'axios';
 
@@ -82,7 +78,7 @@ const Room = () => {
                     {props => <MapViewTab {...props} markers={markers} userLocation={location} />}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
-                    {props => <ListView {...props} />}
+                    {props => <ListView {...props} markers={markers}/>}
                 </TopTab.Screen>
             </TopTab.Navigator>
         </SafeAreaView>
