@@ -3,7 +3,6 @@ import {
     View,
     Text,
     TextInput,
-    Button,
     TouchableOpacity,
     Image,
     ScrollView,
@@ -15,11 +14,27 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { styles } from "./postUnitForm.style";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const PostUnitForm = ({ onSubmit, onCancel }) => {
-    const [units, setUnits] = useState([{ id: 1, type:"unit", address: "", price: 0, description: '', bathrooms: 0, parkings: 0, images: [] }]);
+    const [units, setUnits] = useState([{
+        id: 1,
+        type: "unit",
+        address: "",
+        price: 0,
+        bondPrice: 0,
+        rooms: 0,
+        description: '',
+        bathrooms: 0,
+        parkings: 0,
+        startDate: '',
+        phone1: '',
+        phone2: '',
+        images: []
+    }]);
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [validationErrors, setValidationErrors] = useState({});
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const MAX_IMAGES = 5;
 
     const validateField = useCallback((field, value) => {
@@ -28,10 +43,21 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 return value !== '';
             case 'price':
                 return value > 0;
+            case 'bondPrice':
+                return value > 0;
+            case 'rooms':
+                return value > 0;
+            case 'startDate':
+                return value instanceof Date && !isNaN(value.getTime());
+            case 'description':
+                return value.length > 50;
             case 'bathrooms':
                 return value > 0;
             case 'parkings':
                 return value >= 0;
+            case 'phone1':
+                const phoneRegex = /^04\d{8}$/;
+                return phoneRegex.test(value);
             case 'images':
                 return value.length <= MAX_IMAGES;
             default:
@@ -44,7 +70,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
 
         const isFormValid = units.length > 0 && units.every(unit => {
             let isUnitValid = true;
-            ['address', 'price', 'bathrooms', 'parkings', 'images'].forEach(field => {
+            ['address', 'price', 'rooms', 'startDate', 'bathrooms', 'description', 'parkings', 'images', 'phone1'].forEach(field => {
                 if (!validateField(field, unit[field])) {
                     isUnitValid = false;
                     errors[unit.id] = errors[unit.id] || {};
@@ -69,7 +95,20 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
     };
 
     const handleTextChange = (value, unitId, field) => {
-        const updatedUnits = units.map(unit => (unit.id === unitId ? { ...unit, [field]: value } : unit));
+        const updatedUnits = units.map(unit => {
+            if (unit.id === unitId) {
+                const updatedUnit = { ...unit, [field]: value };
+                if (field === 'startDate') {
+                    const startDate = new Date(value);
+                    const endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 7);
+                    updatedUnit.endDate = endDate;
+                    setDatePickerVisibility(false);
+                }
+                return updatedUnit;
+            }
+            return unit;
+        });
         setUnits(updatedUnits);
     };
 
@@ -93,6 +132,10 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
         }
     };
 
+    const showDatePicker = () => {
+        setDatePickerVisibility(true);
+    };
+
     const removeImage = (unitId, uri) => {
         const updatedUnits = units.map(unit => {
             if (unit.id === unitId) {
@@ -105,7 +148,21 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
 
     const addUnit = () => {
         const newUnitId = units.length + 1;
-        const newUnit = { id: newUnitId, type: 'unit', address: '', price: 0, description: '', bathrooms: 0, parkings: 0, images: [] };
+        const newUnit = {
+            id: newUnitId,
+            type: 'unit',
+            address: '',
+            price: 0,
+            bondPrice: 0,
+            rooms: 0,
+            description: '',
+            bathrooms: 0,
+            parkings: 0,
+            startDate:'',
+            phone1:'',
+            phone2:'',
+            images: []
+        };
         setUnits([...units, newUnit]);
     };
 
@@ -116,7 +173,14 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
 
     const handleSubmit = () => {
         console.log("submitting data ", units);
-        onSubmit(units);
+        // onSubmit(units);
+    };
+
+    const handleAddressSelect = (unitId, data) => {
+        const updatedUnits = units.map(unit => (
+            unit.id === unitId ? { ...unit, address: data.description } : unit
+        ));
+        setUnits(updatedUnits);
     };
 
     const renderUnit = ({ item: unit }) => (
@@ -128,10 +192,10 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
 
             <Text style={styles.label}>Address *</Text>
             <GooglePlacesAutocomplete
-                placeholder="Enter Address"
-                onPress={(data) => handleTextChange(data.description, unit.id, 'address')}
+                placeholder="Enter Unit Address"
+                onPress={(data) => handleAddressSelect(unit.id, data)}
                 query={{
-                    key: '',
+                    key: '', // Your Google API Key
                     language: 'en',
                     components: { country: 'au' }
                 }}
@@ -139,15 +203,41 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
             />
             {validationErrors[unit.id]?.address && <Text style={styles.errorText}>Address is required.</Text>}
 
-            <Text style={styles.label}>Price *</Text>
+            <View style={styles.rowContainer}>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Weekly Price *</Text>
+                    <TextInput
+                        style={[styles.input, validationErrors[unit.id]?.price && styles.errorInput]}
+                        placeholder="Enter Weekly Price"
+                        value={unit.price.toString()}
+                        onChangeText={(price) => handleNumericChange(price, unit.id, 'price')}
+                        keyboardType="numeric"
+                    />
+                </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Bond Price *</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter Bond Price"
+                        value={unit.bondPrice.toString()}
+                        onChangeText={(bondPrice) => handleNumericChange(bondPrice, unit.id, 'bondPrice')}
+                        keyboardType="numeric"
+                    />
+                </View>
+            </View>
+            {validationErrors[unit.id]?.price &&
+                <Text style={styles.errorText}>Price must be greater than 0.</Text>}
+
+            <Text style={styles.label}>Number of Rooms *</Text>
             <TextInput
-                style={[styles.input, validationErrors[unit.id]?.price && styles.errorInput]}
-                placeholder="Enter Price"
-                value={unit.price.toString()}
-                onChangeText={(price) => handleNumericChange(price, unit.id, 'price')}
+                style={[styles.input, validationErrors[unit.id]?.rooms && styles.errorInput]}
+                placeholder="Enter Total Rooms"
+                value={unit.rooms.toString()}
+                onChangeText={(rooms) => handleNumericChange(rooms, unit.id, 'rooms')}
                 keyboardType="numeric"
             />
-            {validationErrors[unit.id]?.price && <Text style={styles.errorText}>Price must be greater than 0.</Text>}
+            {validationErrors[unit.id]?.rooms &&
+                <Text style={styles.errorText}>Number of rooms must be greater than 0.</Text>}
 
             <Text style={styles.label}>Description</Text>
             <TextInput
@@ -157,8 +247,10 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 onChangeText={(description) => handleTextChange(description, unit.id, 'description')}
                 multiline
             />
+            {validationErrors[unit.id]?.description &&
+                <Text style={styles.errorText}>Description must be greater than 50 letters</Text>}
 
-            <Text style={styles.label}>Number of Bathrooms *</Text>
+            <Text style={styles.label}>Bathrooms *</Text>
             <TextInput
                 style={[styles.input, validationErrors[unit.id]?.bathrooms && styles.errorInput]}
                 placeholder="Enter Number of Bathrooms"
@@ -166,9 +258,10 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 onChangeText={(bathrooms) => handleNumericChange(bathrooms, unit.id, 'bathrooms')}
                 keyboardType="numeric"
             />
-            {validationErrors[unit.id]?.bathrooms && <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
+            {validationErrors[unit.id]?.bathrooms &&
+                <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
 
-            <Text style={styles.label}>Number of Parkings *</Text>
+            <Text style={styles.label}>Parkings *</Text>
             <TextInput
                 style={[styles.input, validationErrors[unit.id]?.parkings && styles.errorInput]}
                 placeholder="Enter Number of Parkings"
@@ -176,7 +269,62 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 onChangeText={(parkings) => handleNumericChange(parkings, unit.id, 'parkings')}
                 keyboardType="numeric"
             />
-            {validationErrors[unit.id]?.parkings && <Text style={styles.errorText}>Number of parkings must be 0 or more.</Text>}
+            {validationErrors[unit.id]?.parkings &&
+                <Text style={styles.errorText}>Number of parkings must be greater than or equal to 0.</Text>}
+
+            <View style={styles.rowContainer}>
+                <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
+                    <TouchableOpacity
+                        style={[styles.input, styles.datePickerInput]}
+                        onPress={() => showDatePicker()}
+                    >
+                        <Text>{unit.startDate ? unit.startDate.toLocaleDateString() : 'Select Date'}</Text>
+                    </TouchableOpacity>
+                    <DateTimePickerModal
+                        isVisible={isDatePickerVisible}
+                        mode="date"
+                        onConfirm={(startDate) => handleTextChange(startDate, unit.id, 'startDate')}
+                        onCancel={() => setDatePickerVisibility(false)}
+                    />
+                    {validationErrors[unit.id]?.startDate &&
+                        <Text style={styles.errorText}>Select Available date</Text>}
+                </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Available to *</Text>
+                    <TouchableOpacity
+                        style={[styles.input, styles.datePickerInput]}
+                        disabled={true}
+                    >
+                        <Text>{unit.endDate ? unit.endDate.toLocaleDateString() : 'Auto-filled'}</Text>
+                    </TouchableOpacity>
+                    {validationErrors[unit.id]?.startDate &&
+                        <Text style={styles.errorText}>Select Available date</Text>}
+                </View>
+            </View>
+
+            <View style={styles.rowContainer}>
+                <View style={styles.inputContainer}><Text style={styles.label}>Phone1 *</Text>
+                    <TextInput
+                        style={[styles.input, validationErrors[unit.id]?.phone1 && styles.errorInput]}
+                        placeholder="phone 1"
+                        value={unit.phone1.toString()}
+                        onChangeText={(phone1) => handleTextChange(phone1, unit.id, 'phone1')}
+                        keyboardType="numeric"
+                    />
+                </View>
+
+                <View style={styles.inputContainer}><Text style={styles.label}>Phone2</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="phone 2"
+                        value={unit.phone2.toString()}
+                        onChangeText={(phone2) => handleTextChange(phone2, unit.id, 'phone2')}
+                        keyboardType="numeric"
+                    />
+                </View>
+            </View>
+            {validationErrors[unit.id]?.phone1 &&
+                <Text style={styles.errorText}>At least one phone number is required.</Text>}
 
             <TouchableOpacity
                 style={styles.button}
@@ -185,12 +333,15 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 <Text style={styles.buttonText}>{`Upload Unit Images`}</Text>
             </TouchableOpacity>
 
-            <ScrollView horizontal style={styles.imagePreviewContainer}>
-                {unit.images.map((uri) => (
-                    <View key={uri} style={styles.imagePreview}>
+            <ScrollView horizontal>
+                {unit.images.map((uri, index) => (
+                    <View key={index} style={styles.imageContainer}>
                         <Image source={{ uri }} style={styles.image} />
-                        <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(unit.id, uri)}>
-                            <FontAwesome name="times-circle" size={24} color="red" />
+                        <TouchableOpacity
+                            style={styles.removeButton}
+                            onPress={() => removeImage(unit.id, uri)}
+                        >
+                            <FontAwesome name="times-circle" size={30} color="red" />
                         </TouchableOpacity>
                     </View>
                 ))}
@@ -210,29 +361,27 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 renderItem={renderUnit}
                 keyExtractor={(unit) => unit.id.toString()}
                 ListFooterComponent={
-                    units.length > 0 && (
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={addUnit}
-                            >
-                                <Text style={styles.buttonText}>{`Add Unit ${units.length + 1}`}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.button, isSubmitDisabled && styles.disabledButton]}
-                                onPress={handleSubmit}
-                                disabled={isSubmitDisabled}
-                            >
-                                <Text style={styles.buttonText}>Submit</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={onCancel}
-                            >
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={addUnit}
+                        >
+                            <Text style={styles.buttonText}>{`Add Unit ${units.length + 1}`}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.button, isSubmitDisabled && styles.disabledButton]}
+                            onPress={handleSubmit}
+                            disabled={isSubmitDisabled}
+                        >
+                            <Text style={styles.buttonText}>Submit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={onCancel}
+                        >
+                            <Text style={styles.buttonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
                 }
                 keyboardShouldPersistTaps={"handled"}
             />

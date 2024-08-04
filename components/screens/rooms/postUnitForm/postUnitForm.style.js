@@ -20,6 +20,15 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         position: 'relative',
     },
+    rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    inputContainer: {
+        flex: 1,
+        marginRight: 10,
+    },
     label: {
         fontWeight: 'bold',
         marginBottom: 5,

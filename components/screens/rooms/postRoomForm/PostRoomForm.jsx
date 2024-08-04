@@ -215,10 +215,10 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
 
             <View style={styles.rowContainer}>
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Price *</Text>
+                    <Text style={styles.label}>Weekly Price *</Text>
                     <TextInput
                         style={[styles.input, validationErrors[room.id]?.price && styles.errorInput]}
-                        placeholder="Enter Price"
+                        placeholder="Enter Weekly Price"
                         value={room.price.toString()}
                         onChangeText={(price) => handleNumericChange(price, room.id, 'price')}
                         keyboardType="numeric"
