@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useContext} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
     View,
     Text,
@@ -8,17 +8,14 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    FlatList, Button
+    FlatList
 } from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import {styles} from "./postRoomForm.style";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Picker} from "@react-native-picker/picker";
-import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import axios from "axios";
-import {AuthContext} from "../../../auth/AuthContext";
 
 
 const DEFAULT_ROOM = {
@@ -35,7 +32,7 @@ const DEFAULT_ROOM = {
     images: []
 };
 
-const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
+const PostRoomForm = ({onSubmit, onCancel}) => {
     const [rooms, setRooms] = useState([DEFAULT_ROOM]);
     const [address, setAddress] = useState("");
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
@@ -105,11 +102,22 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
         if (field === "address") {
             setAddress(value);
         } else {
-            const updatedRooms = rooms.map(room => (room.id === roomId ? {...room, [field]: value} : room));
+            const updatedRooms = rooms.map(room => {
+                if (room.id === roomId) {
+                    const updatedRoom = {...room, [field]: value};
+                    // If the field is 'startDate', calculate 'endDate' (available to)
+                    if (field === 'startDate') {
+                        const startDate = new Date(value);
+                        const endDate = new Date(startDate);
+                        endDate.setDate(startDate.getDate() + 7); // Add 7 days to the start date
+                        updatedRoom.endDate = endDate;
+                        setDatePickerVisibility(false);
+                    }
+                    return updatedRoom;
+                }
+                return room;
+            });
             setRooms(updatedRooms);
-            if (field === 'startDate') {
-                setDatePickerVisibility(false);
-            }
         }
     };
 
@@ -145,7 +153,18 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
 
     const addRoom = () => {
         const newRoomId = rooms.length + 1;
-        const newRoom = {id: newRoomId, type: 'room', price: 0, including: '1', roomType:'Single', furnished: '1', description: '', bathrooms: 0, parkings: 0, images: []};
+        const newRoom = {
+            id: newRoomId,
+            type: 'room',
+            price: 0,
+            including: '1',
+            roomType: 'Single',
+            furnished: '1',
+            description: '',
+            bathrooms: 0,
+            parkings: 0,
+            images: []
+        };
         setRooms([...rooms, newRoom]);
     };
 
@@ -261,21 +280,35 @@ const PostRoomForm = ({onSubmit, onCancel, handleRoomTypeChange}) => {
             {validationErrors[room.id]?.parkings &&
                 <Text style={styles.errorText}>Number of parking must be 0 or more.</Text>}
 
-            <Text style={styles.label}>Available from *</Text>
-            <TouchableOpacity
-                style={[styles.input, styles.datePickerInput]}
-                onPress={() => showDatePicker()}
-            >
-                <Text>{room.startDate ? room.startDate.toLocaleDateString() : 'Select Date'}</Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={(startDate) => handleTextChange(startDate, room.id, 'startDate')}
-                onCancel={() => setDatePickerVisibility(false)}
-            />
-            {validationErrors[room.id]?.startDate &&
-                <Text style={styles.errorText}>Select Available date</Text>}
+            <View style={styles.rowContainer}>
+                <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
+                    <TouchableOpacity
+                        style={[styles.input, styles.datePickerInput]}
+                        onPress={() => showDatePicker()}
+                    >
+                        <Text>{room.startDate ? room.startDate.toLocaleDateString() : 'Select Date'}</Text>
+                    </TouchableOpacity>
+                    <DateTimePickerModal
+                        isVisible={isDatePickerVisible}
+                        mode="date"
+                        onConfirm={(startDate) => handleTextChange(startDate, room.id, 'startDate')}
+                        onCancel={() => setDatePickerVisibility(false)}
+                    />
+                    {validationErrors[room.id]?.startDate &&
+                        <Text style={styles.errorText}>Select Available date</Text>}
+                </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Available to *</Text>
+                    <TouchableOpacity
+                        style={[styles.input, styles.datePickerInput]}
+                        disabled={true}
+                    >
+                        <Text>{room.endDate ? room.endDate.toLocaleDateString() : 'Auto-filled'}</Text>
+                    </TouchableOpacity>
+                    {validationErrors[room.id]?.startDate &&
+                        <Text style={styles.errorText}>Select Available date</Text>}
+                </View>
+            </View>
 
             <TouchableOpacity
                 style={[styles.button, styles.uploadImage]}
