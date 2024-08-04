@@ -31,6 +31,7 @@ const DEFAULT_ROOM = {
     startDate: '',
     phone1: '',
     phone2: '',
+    gender: 'all',
     images: []
 };
 
@@ -56,6 +57,9 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 return value > 0;
             case 'parkings':
                 return value >= 0;
+            case 'phone1':
+                const phoneRegex = /^04\d{8}$/;
+                return phoneRegex.test(value);
             case 'images':
                 return value.length <= MAX_IMAGES;
             default:
@@ -72,7 +76,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
 
         const isFormValid = rooms.length > 0 && rooms.every(room => {
             let isRoomValid = true;
-            ['price', 'description', 'bathrooms', 'parkings', 'startDate', 'images'].forEach(field => {
+            ['price', 'description', 'bathrooms', 'parkings', 'startDate', 'images', 'phone1'].forEach(field => {
                 if (!validateField(field, room[field])) {
                     isRoomValid = false;
                     errors[room.id] = errors[room.id] || {};
@@ -159,12 +163,16 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             id: newRoomId,
             type: 'room',
             price: 0,
-            including: '1',
             roomType: 'Single',
+            including: '1',
             furnished: '1',
             description: '',
             bathrooms: 0,
             parkings: 0,
+            startDate: '',
+            phone1: '',
+            phone2: '',
+            gender: 'all',
             images: []
         };
         setRooms([...rooms, newRoom]);
@@ -181,7 +189,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             ...room
         }));
         console.log("before submitting ....", updatedRooms);
-        // onSubmit(updatedRooms);
+        onSubmit(updatedRooms);
     };
 
     const renderRoom = ({item: room}) => (
@@ -190,6 +198,20 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 <FontAwesome name="times-circle" size={30} color="red"/>
             </TouchableOpacity>
             <Text style={styles.formTitle}>Room {room.id}</Text>
+
+            <Text style={styles.label}>Only for *</Text>
+            <View style={styles.pickerContainer}>
+                <Picker
+                    selectedValue={room.gender}
+                    style={styles.picker}
+                    onValueChange={(value) => handleTextChange(value, room.id, 'gender')}
+                >
+                    <Picker.Item label="Male" value="male"/>
+                    <Picker.Item label="Female" value="female"/>
+                    <Picker.Item label="Any Gender" value="all"/>
+                </Picker>
+            </View>
+
 
             <View style={styles.rowContainer}>
                 <View style={styles.inputContainer}>
@@ -313,12 +335,12 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             </View>
 
             <View style={styles.rowContainer}>
-                <View style={styles.inputContainer}><Text style={styles.label}>Phone1</Text>
+                <View style={styles.inputContainer}><Text style={styles.label}>Phone1 *</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, validationErrors[room.id]?.phone1 && styles.errorInput]}
                         placeholder="phone 1"
                         value={room.phone1.toString()}
-                        onChangeText={(phone1) => handleNumericChange(phone1, room.id, 'phone1')}
+                        onChangeText={(phone1) => handleTextChange(phone1, room.id, 'phone1')}
                         keyboardType="numeric"
                     />
                 </View>
@@ -328,11 +350,13 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                         style={styles.input}
                         placeholder="phone 2"
                         value={room.phone2.toString()}
-                        onChangeText={(phone2) => handleNumericChange(phone2, room.id, 'phone2')}
+                        onChangeText={(phone2) => handleTextChange(phone2, room.id, 'phone2')}
                         keyboardType="numeric"
                     />
                 </View>
             </View>
+            {validationErrors[room.id]?.phone1 &&
+                <Text style={styles.errorText}>At least one phone number is required.</Text>}
 
             <TouchableOpacity
                 style={[styles.button, styles.uploadImage]}
