@@ -173,7 +173,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
 
     const handleSubmit = () => {
         console.log("submitting data ", units);
-        // onSubmit(units);
+        onSubmit(units);
     };
 
     const handleAddressSelect = (unitId, data) => {

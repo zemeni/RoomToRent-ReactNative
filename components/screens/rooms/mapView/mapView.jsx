@@ -7,9 +7,6 @@ import {styles} from './mapView.style';
 import {AuthContext} from '../../../auth/AuthContext';
 import {useNavigation} from '@react-navigation/native';
 import PostForm from "../postForm/postForm";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import the form component
-
-import Slider from "@react-native-community/slider";
 import Toast from "react-native-toast-message";
 import CustomMarker from "./customMarker";
 
