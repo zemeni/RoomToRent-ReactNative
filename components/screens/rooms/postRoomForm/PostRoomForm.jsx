@@ -29,6 +29,8 @@ const DEFAULT_ROOM = {
     bathrooms: 0,
     parkings: 0,
     startDate: '',
+    phone1: '',
+    phone2: '',
     images: []
 };
 
@@ -179,7 +181,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             ...room
         }));
         console.log("before submitting ....", updatedRooms);
-        onSubmit(updatedRooms);
+        // onSubmit(updatedRooms);
     };
 
     const renderRoom = ({item: room}) => (
@@ -307,6 +309,28 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                     </TouchableOpacity>
                     {validationErrors[room.id]?.startDate &&
                         <Text style={styles.errorText}>Select Available date</Text>}
+                </View>
+            </View>
+
+            <View style={styles.rowContainer}>
+                <View style={styles.inputContainer}><Text style={styles.label}>Phone1</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="phone 1"
+                        value={room.phone1.toString()}
+                        onChangeText={(phone1) => handleNumericChange(phone1, room.id, 'phone1')}
+                        keyboardType="numeric"
+                    />
+                </View>
+
+                <View style={styles.inputContainer}><Text style={styles.label}>Phone2</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="phone 2"
+                        value={room.phone2.toString()}
+                        onChangeText={(phone2) => handleNumericChange(phone2, room.id, 'phone2')}
+                        keyboardType="numeric"
+                    />
                 </View>
             </View>
 
