@@ -54,7 +54,7 @@ const MapViewTab = ({markers, userLocation}) => {
         setIsFormVisible(false);
         console.log("token is ", user.token);
         try {
-            const response = await fetch('http://192.168.1.108:4000/api/rooms', {
+            const response = await fetch('http://192.168.1.108:4000/api/property', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
