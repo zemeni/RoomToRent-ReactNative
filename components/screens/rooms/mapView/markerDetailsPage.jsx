@@ -13,13 +13,10 @@ const MarkerDetailsPage = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
 
-    console.log("inside markers detail page");
-
     useEffect(() => {
         const fetchRoomDetails = async () => {
             try {
                 const response = await axios.get(`http://192.168.1.108:4000/api/rooms/${roomId}`);
-                console.log("room details is ", response.data);
                 setRoom(response.data);
                 setLoading(false);
             } catch (error) {
@@ -57,31 +54,89 @@ const MarkerDetailsPage = () => {
         );
     }
 
-    console.log("marker details page is ", room);
-
     return (
         <View style={styles.container}>
             <ScrollView>
-                <Text style={styles.title}>Room Details</Text>
+
+                {/* Address */}
                 <Text style={styles.label}>Address:</Text>
                 <Text style={styles.info}>{room.address}</Text>
-                <Text style={styles.label}>Price:</Text>
-                <Text style={styles.info}>${room.price}</Text>
+
+                {/* Only for */}
+                <Text style={styles.label}>Available for:</Text>
+                <Text style={styles.info}>{room.gender==='all'?'All Gender': room.gender}</Text>
+
+                {/* Weekly Price and Including */}
+                <View style={styles.flexRow}>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Weekly Price:</Text>
+                        <Text style={styles.info}>${room.price}</Text>
+                    </View>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Including:</Text>
+                        <Text style={styles.info}>{room.including ? 'Yes' : 'No'}</Text>
+                    </View>
+                </View>
+
+                {/* Room Type and Furnished */}
+                <View style={styles.flexRow}>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Room Type:</Text>
+                        <Text style={styles.info}>{room.roomtype}</Text>
+                    </View>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Furnished:</Text>
+                        <Text style={styles.info}>{room.furnished ? 'Yes' : 'No'}</Text>
+                    </View>
+                </View>
+
+                {/* Description */}
                 <Text style={styles.label}>Description:</Text>
                 <Text style={styles.info}>{room.description}</Text>
-                <Text style={styles.label}>Bathrooms:</Text>
+
+                {/* Number of Bathrooms */}
+                <Text style={styles.label}>Number of Bathrooms:</Text>
                 <Text style={styles.info}>{room.bathrooms}</Text>
-                <Text style={styles.label}>Parkings:</Text>
+
+                {/* Number of Parkings */}
+                <Text style={styles.label}>Number of Parkings:</Text>
                 <Text style={styles.info}>{room.parkings}</Text>
+
+                {/* Available from and Available to */}
+                <View style={styles.flexRow}>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Available From:</Text>
+                        <Text style={styles.info}>{new Date(room.startdate).toLocaleDateString()}</Text>
+                    </View>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Available To:</Text>
+                        <Text style={styles.info}>{new Date(room.enddate).toLocaleDateString()}</Text>
+                    </View>
+                </View>
+
+                {/* Phone 1 and Phone 2 */}
+                <View style={styles.flexRow}>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Phone 1:</Text>
+                        <Text style={styles.info}>{room.phone1}</Text>
+                    </View>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Phone 2:</Text>
+                        <Text style={styles.info}>{room.phone2 || 'N/A'}</Text>
+                    </View>
+                </View>
+
+                {/* Images */}
                 <Text style={styles.label}>Images:</Text>
-                {/*<ScrollView horizontal style={styles.imageContainer}>
+                 <ScrollView horizontal style={styles.imageContainer}>
                     {room.images.map((uri, index) => (
                         <TouchableOpacity key={index} onPress={() => handleImagePress(uri)}>
                             <Image source={{ uri }} style={styles.imageThumbnail} />
                         </TouchableOpacity>
                     ))}
-                </ScrollView>*/}
+                </ScrollView>
             </ScrollView>
+
             <Button title="Back" onPress={() => navigation.goBack()} />
 
             <Modal
@@ -105,6 +160,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: '#ebedf1'
     },
     loadingContainer: {
         flex: 1,
@@ -133,6 +189,14 @@ const styles = StyleSheet.create({
     info: {
         fontSize: 16,
         marginBottom: 10,
+    },
+    flexRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    flexColumn: {
+        flex: 1,
     },
     imageContainer: {
         flexDirection: 'row',
