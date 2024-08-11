@@ -11,8 +11,8 @@ import Toast from "react-native-toast-message";
 import CustomMarker from "./customMarker";
 
 
-const MapViewTab = ({markers, userLocation}) => {
-    const [mapType, setMapType] = useState('satellite'); // Default map type
+const MapViewTab = ({markers, mapLocation, userLocation}) => {
+    const [mapType, setMapType] = useState('standard'); // Default map type
     const [isFormVisible, setIsFormVisible] = useState(false);
     const mapRef = useRef(null);
 
@@ -22,9 +22,19 @@ const MapViewTab = ({markers, userLocation}) => {
     const {user} = useContext(AuthContext);
     const navigation = useNavigation();
 
+    console.log("inside map view tab");
+    console.log("updated user location in map view is ", mapLocation);
+
     useEffect(() => {
-        setMarkerPosition(null);
-    }, []);
+        if (mapRef.current && mapLocation) {
+            mapRef.current.animateToRegion({
+                latitude: mapLocation.latitude,
+                longitude: mapLocation.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            }, 1000);
+        }
+    }, [mapLocation]);
 
     const resetToCurrentLocation = () => {
         if (mapRef.current && userLocation) {
@@ -130,16 +140,16 @@ const MapViewTab = ({markers, userLocation}) => {
             <MapView
                 ref={mapRef}
                 style={styles.map}
-                initialRegion={userLocation ? {
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude,
+                initialRegion={mapLocation ? {
+                    latitude: mapLocation.latitude,
+                    longitude: mapLocation.longitude,
                     latitudeDelta: 0.005,
                     longitudeDelta: 0.005,
                 } : null}
                 showsUserLocation={true}
                 showsMyLocationButton={false}
                 mapType={mapType === 'standard' ? 'standard' : mapType === 'satellite' ? 'satellite' : 'hybrid'}
-                onPress={handleMapPress}
+                // onPress={handleMapPress}
             >
                 {/* DON'T REMOVE {markerPosition && (
                     <>
@@ -161,11 +171,9 @@ const MapViewTab = ({markers, userLocation}) => {
                     <Marker
                         key={marker.id}
                         coordinate={marker.coordinate}
-                        title={marker.title}
-                        // description={marker.description}
                         onPress={() => handleMarkerPress(marker)}
                     >
-                        <CustomMarker price={marker.title.split(' ')[1]} />
+                        <CustomMarker price={marker.price} />
                     </Marker>
                 ))}
             </MapView>

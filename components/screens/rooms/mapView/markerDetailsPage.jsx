@@ -13,6 +13,8 @@ const MarkerDetailsPage = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
 
+    console.log("room id in Marker Details Page is", roomId);
+
     useEffect(() => {
         const fetchRoomDetails = async () => {
             try {

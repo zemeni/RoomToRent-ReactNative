@@ -150,6 +150,9 @@ const SignUpScreen = () => {
                         <Picker.Item label="Queensland" value="QLD" />
                         <Picker.Item label="South Australia" value="SA" />
                         <Picker.Item label="Western Australia" value="WA" />
+                        <Picker.Item label="Tasmania" value="TAS" />
+                        <Picker.Item label="Northern Territory" value="NT" />
+                        <Picker.Item label="Australian Capital Territory" value="ACT" />
                     </Picker>
                 </View>
                 <TouchableOpacity

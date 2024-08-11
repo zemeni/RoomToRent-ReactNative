@@ -1,5 +1,4 @@
 import { Text, View, StyleSheet } from "react-native";
-import { style } from "./jobs.style";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {useEffect} from "react";
@@ -7,25 +6,6 @@ import {useEffect} from "react";
 const Jobs = () => {
     const inset = useSafeAreaInsets();
     console.log("job is rendered");
-
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            try {
-                const response = await fetch('http://192.168.1.108:4000/hello');
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-                console.log('Profile data:', data);
-            } catch (error) {
-                console.error('Error fetching profile data:', error);
-            }
-        };
-
-        fetchProfileData();
-    }, []);
 
     return (
         <View style={styles.container}>

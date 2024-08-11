@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 
-const ListView = () => {
+const ListView = ({markers}) => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await axios.get('http://192.168.1.108:4000/api/rooms');
-        console.log('API response:', response.data); // Logging the response to ensure data is fetched
-        setRooms(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching rooms:', error);
-        setLoading(false);
-      }
-    };
+  console.log("markers in list view ", markers);
 
-    fetchRooms();
-  }, []);
+  useEffect(() => {
+    if (markers.length > 0) {
+      // Map markers to match the expected format
+      const mappedRooms = markers.map(marker => ({
+        id: marker.id,
+        price: marker.price,
+        latitude: marker.coordinate.latitude,
+        longitude: marker.coordinate.longitude
+      }));
+      setRooms(mappedRooms);
+    }
+    setLoading(false);
+  }, [markers]); // Include markers in the dependency array
+
 
 
   const handlePress = (item) => {
