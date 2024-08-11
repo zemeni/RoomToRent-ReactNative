@@ -48,7 +48,7 @@ const Room = () => {
 
         const fetchRoomData = async (selectedState) => {
             try {
-                const response = await axios.get(`http://192.168.1.108:4000/api/rooms?state=${selectedState}`); // Replace with your IP address
+                const response = await axios.get(`http://192.168.1.108:4000/api/properties?state=${selectedState}`); // Replace with your IP address
                 console.log("rooms response is ", response.data);
 
                 const fetchedMarkers = response.data.map((room, index) => ({
@@ -58,6 +58,7 @@ const Room = () => {
                         longitude: room.longitude
                     },
                     price: room.price,
+                    type: room.type
                 }));
 
                 setMarkers(fetchedMarkers);

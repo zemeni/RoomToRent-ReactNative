@@ -129,7 +129,8 @@ const MapViewTab = ({markers, mapLocation, userLocation}) => {
     };
 
     const handleMarkerPress = (marker) => {
-        navigation.navigate('MarkerDetailsPage', {roomId: marker.id})
+        console.log("passing this marker to MarkerDetailsPage::", marker);
+        navigation.navigate('MarkerDetailsPage', {propertyId: marker.id, type:marker.type})
     }
 
 
@@ -173,7 +174,7 @@ const MapViewTab = ({markers, mapLocation, userLocation}) => {
                         coordinate={marker.coordinate}
                         onPress={() => handleMarkerPress(marker)}
                     >
-                        <CustomMarker price={marker.price} />
+                        <CustomMarker price={marker.price} type={marker.type}/>
                     </Marker>
                 ))}
             </MapView>

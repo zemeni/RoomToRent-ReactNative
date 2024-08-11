@@ -24,7 +24,7 @@ function AppNavigator() {
                 <>
                     <Stack.Screen name="Main" component={Navbar} options={{ headerShown: false }} />
                     <Stack.Screen name="DetailsPage" component={DetailsPage} />
-                    <Stack.Screen name="MarkerDetailsPage" component={MarkerDetailsPage} />
+                    <Stack.Screen name="MarkerDetailsPage" component={MarkerDetailsPage} options={{title:'Property Details'}}/>
                 </>
             ) : (
                 <>

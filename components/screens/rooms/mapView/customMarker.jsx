@@ -2,10 +2,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const CustomMarker = ({ price }) => {
+const CustomMarker = ({ price , type}) => {
+    const badgeColor = type === 'room' ? '#30c189' : type === 'unit' ? '#9d30c1' : '#3498db';
     return (
         <View style={styles.markerContainer}>
-            <View style={styles.badge}>
+            <View style={[styles.badge, { backgroundColor: badgeColor }]}>
                 <Text style={styles.priceText}>${price}</Text>
             </View>
         </View>
@@ -18,7 +19,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     badge: {
-        backgroundColor: '#3498db',
         padding: 5,
         borderRadius: 10,
     },

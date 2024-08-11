@@ -6,19 +6,23 @@ import axios from 'axios';
 const MarkerDetailsPage = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const { roomId } = route.params;
+    const { propertyId, type } = route.params;
 
     const [room, setRoom] = useState(null);
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
 
-    console.log("room id in Marker Details Page is", roomId);
+    console.log("room id in Marker Details Page is", propertyId);
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.108:4000/api/rooms/${roomId}`);
+                const response = await axios.get(`http://192.168.1.108:4000/api/property/${propertyId}`, {
+                    params: {
+                        type: type
+                    }
+                });
                 setRoom(response.data);
                 setLoading(false);
             } catch (error) {
@@ -28,7 +32,7 @@ const MarkerDetailsPage = () => {
         };
 
         fetchRoomDetails();
-    }, [roomId]);
+    }, [propertyId, type]);
 
     const handleImagePress = (uri) => {
         setSelectedImage(uri);
@@ -55,6 +59,8 @@ const MarkerDetailsPage = () => {
             </View>
         );
     }
+
+    console.log("room details in markerDetailsPage are ", room);
 
     return (
         <View style={styles.container}>
@@ -129,14 +135,14 @@ const MarkerDetailsPage = () => {
                 </View>
 
                 {/* Images */}
-                <Text style={styles.label}>Images:</Text>
+                {/*<Text style={styles.label}>Images:</Text>
                  <ScrollView horizontal style={styles.imageContainer}>
                     {room.images.map((uri, index) => (
                         <TouchableOpacity key={index} onPress={() => handleImagePress(uri)}>
                             <Image source={{ uri }} style={styles.imageThumbnail} />
                         </TouchableOpacity>
                     ))}
-                </ScrollView>
+                </ScrollView>*/}
             </ScrollView>
 
             <Button title="Back" onPress={() => navigation.goBack()} />
