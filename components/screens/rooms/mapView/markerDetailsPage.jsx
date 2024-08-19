@@ -71,8 +71,10 @@ const MarkerDetailsPage = () => {
                 <Text style={styles.info}>{room.address}</Text>
 
                 {/* Only for */}
-                <Text style={styles.label}>Available for:</Text>
-                <Text style={styles.info}>{room.gender==='all'?'All Gender': room.gender}</Text>
+                {room.type === 'room' && <View>
+                    <Text style={styles.label}>Available for:</Text>
+                    <Text style={styles.info}>{room.gender === 'all' ? 'All Gender' : room.gender}</Text>
+                </View>}
 
                 {/* Weekly Price and Including */}
                 <View style={styles.flexRow}>

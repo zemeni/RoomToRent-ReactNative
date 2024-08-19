@@ -1,112 +1,101 @@
-import React, {useContext} from "react";
-import {View, Text, FlatList, TouchableOpacity, StyleSheet, Alert} from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {AuthContext} from "../../auth/AuthContext";
-import {useNavigation} from "@react-navigation/native";
-import {styles} from "./myprofile.style";
-import Toast from "react-native-toast-message";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const MyProfile = () => {
-    const inset = useSafeAreaInsets();
-    const {user, logout} = useContext(AuthContext);
+    const [properties, setProperties] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
-    const handleLogout = async () => {
-        await logout();
-        navigation.navigate('Login');
-        Toast.show({
-            type: 'success',
-            position: 'bottom',
-            text1: `Logged out`,
-            text2: 'Explore RoomToRent',
-            visibilityTime: 3000,
-        });
+    useEffect(() => {
+        const fetchUserProperties = async () => {
+            try {
+                const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/neupanebabu828@gmail.com`, {
+                    params: {
+                        type: 'room'
+                    }
+                });
+                console.log("response in MyProfile is ", response.data);
+                setProperties(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching user properties:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchUserProperties();
+    }, []);
+
+    const handlePropertyPress = (propertyId, type) => {
+        navigation.navigate('EditMarkerDetails', { propertyId, type, openModal:true });
     };
 
-/*    const handleLogout = async () => {
-        await logout();
-        navigation.navigate('Login');
-    };*/
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
 
-    // Dummy data for rooms and units
-    const rooms = [
-        {id: '1', name: 'Room A', location: 'Sydney, NSW'},
-        {id: '2', name: 'Room B', location: 'Melbourne, VIC'},
-    ];
-
-    const units = [
-        {id: '1', name: 'Unit 101', location: 'Brisbane, QLD'},
-        {id: '2', name: 'Unit 202', location: 'Perth, WA'},
-    ];
-
-    // Combine sections into one list
-    const combinedData = [
-        {type: 'userInfo', data: user},
-        {type: 'rooms', data: rooms},
-        {type: 'units', data: units},
-    ];
-
-    const renderItem = ({item}) => {
-        if (item.type === 'rooms' || item.type === 'units') {
-            return (
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{item.type === 'rooms' ? 'Rooms Posted' : 'Units Posted'}</Text>
-                    <FlatList
-                        data={item.data}
-                        renderItem={({item}) => (
-                            <View style={styles.itemContainer}>
-                                <Text style={styles.itemName}>{item.name}</Text>
-                                <Text style={styles.itemLocation}>{item.location}</Text>
-                            </View>
-                        )}
-                        keyExtractor={(item) => item.id}
-                        style={styles.list}
-                    />
-                </View>
-            );
-        }
-
-        return null;
-    };
+    if (!properties.length) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text>No properties found.</Text>
+            </View>
+        );
+    }
 
     return (
-        <FlatList
-            data={combinedData}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={[
-                styles.container,
-                {
-                    paddingTop: inset.top,
-                    paddingBottom: inset.bottom,
-                    paddingLeft: inset.left,
-                    paddingRight: inset.right,
-                },
-            ]}
-            ListFooterComponent={
-                user ? (
-                    <TouchableOpacity style={styles.button} onPress={handleLogout}>
-                        <Text style={styles.buttonText}>Logout</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <>
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => navigation.navigate("Login", {fromScreen: "Profile"})}
-                        >
-                            <Text style={styles.buttonText}>Login</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => navigation.navigate("SignUp", {fromScreen: "Profile"})}
-                        >
-                            <Text style={styles.buttonText}>Sign Up</Text>
-                        </TouchableOpacity>
-                    </>
-                )
-            }
-        />
+        <ScrollView style={styles.container}>
+            {properties.map((property) => (
+                <TouchableOpacity
+                    key={property.id}
+                    style={styles.propertySnippet}
+                    onPress={() => handlePropertyPress(property.id, property.type)}
+                >
+                    <Text style={styles.propertyInfo}>{property.type === 'room' ? 'Room' : 'Unit'}</Text>
+                    <Text style={styles.propertyTitle}>{property.address}</Text>
+                    <Text style={styles.propertyInfo}>${property.price} per week</Text>
+                </TouchableOpacity>
+            ))}
+        </ScrollView>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#ebedf1',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    propertySnippet: {
+        padding: 15,
+        marginBottom: 10,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        elevation: 2,
+    },
+    propertyTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    propertyInfo: {
+        fontSize: 16,
+        marginTop: 5,
+    },
+});
 
 export default MyProfile;

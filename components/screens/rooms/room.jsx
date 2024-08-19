@@ -98,7 +98,7 @@ const Room = () => {
             </View>
 
             <TopTab.Navigator>
-                <TopTab.Screen name="Map">
+                <TopTab.Screen name="Map" >
                     {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation}  userLocation={userLocation}/>}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
