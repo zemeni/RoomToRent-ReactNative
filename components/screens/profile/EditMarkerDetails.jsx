@@ -1,16 +1,11 @@
-import React, {useState, useEffect, useContext, useCallback} from 'react';
-import {View, Text, TextInput, StyleSheet, ScrollView, Button, ActivityIndicator, TouchableOpacity} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import {useRoute, useNavigation} from '@react-navigation/native';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TextInput, StyleSheet, ScrollView, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import {AuthContext} from "../../auth/AuthContext";
+import axios from 'axios';
+import { AuthContext } from "../../auth/AuthContext";
 
-const EditMarkerDetails = () => {
-    const route = useRoute();
-    const navigation = useNavigation();
-    const {propertyId, type, openModal} = route.params;
-
+const EditMarkerDetails = ({ propertyId, type, onClose }) => {
     const [room, setRoom] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -18,13 +13,13 @@ const EditMarkerDetails = () => {
     const [isUpdateDisabled, setIsUpdateDisabled] = useState(true);
     const [errors, setErrors] = useState({});
     const [initialRoom, setInitialRoom] = useState(null); // New state to track initial room data
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
             try {
                 const response = await axios.get(`http://192.168.1.108:4000/api/property/${propertyId}`, {
-                    params: {type: type}
+                    params: { type: type }
                 });
                 setRoom(response.data);
                 setInitialRoom(response.data); // Set initial room data
@@ -46,30 +41,34 @@ const EditMarkerDetails = () => {
 
     const handleTextChange = (value, field) => {
         console.log(field, value);
-        const updatedRoom = {...room, [field]: value};
+        const updatedRoom = { ...room, [field]: value };
+
+        // Initialize error object
+        let newErrors = { ...errors };
 
         // Validation
         if (field === 'price' || field === 'bathrooms') {
             const numericValue = parseFloat(value);
             if (isNaN(numericValue) || numericValue <= 0) {
-                setErrors(prevErrors => ({...prevErrors, [field]: `${field} must be greater than 0`}));
+                newErrors[field] = `${field} must be greater than 0`;
             } else {
-                setErrors(prevErrors => {
-                    const newErrors = {...prevErrors};
-                    delete newErrors[field];
-                    return newErrors;
-                });
+                delete newErrors[field];
+            }
+        }
+
+        if (field === 'phone1') {
+            const phoneRegex = /^04\d{8}$/; // Example for Australian mobile numbers
+            if (!phoneRegex.test(value)) {
+                newErrors.phone1 = 'Phone1 must be a valid mobile number starting with 04';
+            } else {
+                delete newErrors.phone1;
             }
         }
 
         if (field === 'description' && value.trim().length < 50) {
-            setErrors(prevErrors => ({...prevErrors, description: 'Description must be greater than 50 words'}));
+            newErrors.description = 'Description must be greater than 50 words';
         } else {
-            setErrors(prevErrors => {
-                const newErrors = {...prevErrors};
-                delete newErrors.description;
-                return newErrors;
-            });
+            delete newErrors.description;
         }
 
         if (field === 'startdate') {
@@ -80,8 +79,10 @@ const EditMarkerDetails = () => {
             setDatePickerVisibility(false);
         }
 
+        setErrors(newErrors);
         setRoom(updatedRoom);
     };
+
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -105,14 +106,12 @@ const EditMarkerDetails = () => {
                 body: JSON.stringify(room),
             });
 
-            /*if (!response.ok) {
+            if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
-            }*/
+            }
 
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'MyProfile' }],
-            });
+            // Close the modal and return to the previous screen
+            onClose();
         } catch (error) {
             console.error('Error saving room details:', error);
         } finally {
@@ -123,7 +122,7 @@ const EditMarkerDetails = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff"/>
+                <ActivityIndicator size="large" color="#0000ff" />
             </View>
         );
     }
@@ -132,7 +131,7 @@ const EditMarkerDetails = () => {
         return (
             <View style={styles.errorContainer}>
                 <Text style={styles.errorText}>Error loading room details.</Text>
-                <Button title="Back to List" onPress={() => navigation.goBack()}/>
+                <Button title="Back to List" onPress={onClose} />
             </View>
         );
     }
@@ -154,9 +153,9 @@ const EditMarkerDetails = () => {
                             style={styles.picker}
                             onValueChange={(value) => handleTextChange(value, 'gender')}
                         >
-                            <Picker.Item label="Male" value="male"/>
-                            <Picker.Item label="Female" value="female"/>
-                            <Picker.Item label="Any Gender" value="all"/>
+                            <Picker.Item label="Male" value="male" />
+                            <Picker.Item label="Female" value="female" />
+                            <Picker.Item label="Any Gender" value="all" />
                         </Picker>
                     </View>
                 </View>
@@ -181,8 +180,8 @@ const EditMarkerDetails = () => {
                                 style={styles.picker}
                                 onValueChange={(value) => handleTextChange(value, 'including')}
                             >
-                                <Picker.Item label="Yes" value="1"/>
-                                <Picker.Item label="No" value="0"/>
+                                <Picker.Item label="Yes" value="1" />
+                                <Picker.Item label="No" value="0" />
                             </Picker>
                         </View>
                     </View>
@@ -199,8 +198,8 @@ const EditMarkerDetails = () => {
                                 style={styles.picker}
                                 onValueChange={(value) => handleTextChange(value, 'roomType')}
                             >
-                                <Picker.Item label="Single" value="Single"/>
-                                <Picker.Item label="Double" value="Double"/>
+                                <Picker.Item label="Single" value="Single" />
+                                <Picker.Item label="Double" value="Double" />
                             </Picker>
                         </View>
                     </View>
@@ -213,8 +212,8 @@ const EditMarkerDetails = () => {
                                 style={styles.picker}
                                 onValueChange={(value) => handleTextChange(value, 'furnished')}
                             >
-                                <Picker.Item label="Yes" value="1"/>
-                                <Picker.Item label="No" value="0"/>
+                                <Picker.Item label="Yes" value="1" />
+                                <Picker.Item label="No" value="0" />
                             </Picker>
                         </View>
                     </View>
@@ -251,40 +250,54 @@ const EditMarkerDetails = () => {
                 {errors.parkings && <Text style={styles.errorText}>{errors.parkings}</Text>}
 
                 <View style={styles.rowContainer}>
-                    <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
-                        <TouchableOpacity
-                            style={[styles.input, styles.datePickerInput]}
-                            onPress={() => showDatePicker()}
-                        >
-                            <Text style={styles.datePickerText}>{formatDate(room.startdate)}</Text>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Available from *</Text>
+                        <TouchableOpacity onPress={showDatePicker} style={styles.datePickerButton}>
+                            <Text style={styles.datePickerText}>
+                                {room.startdate ? formatDate(room.startdate) : 'Select Date'}
+                            </Text>
                         </TouchableOpacity>
                         <DateTimePickerModal
                             isVisible={isDatePickerVisible}
                             mode="date"
-                            onConfirm={(startDate) => handleTextChange(startDate, 'startdate')}
+                            onConfirm={(date) => handleTextChange(date.toISOString(), 'startdate')}
                             onCancel={() => setDatePickerVisibility(false)}
                         />
-                        {/*{errors.startdate &&
-                            <Text style={styles.errorText}>Select Available date</Text>}*/}
                     </View>
+
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Available to *</Text>
-                        <TouchableOpacity
-                            style={[styles.input, styles.datePickerInput]}
-                            disabled={true}
-                        >
-                            <Text style={styles.datePickerText}>{formatDate(room.enddate)}</Text>
-                        </TouchableOpacity>
-                        {/*{validationErrors[room.id]?.startDate &&
-                            <Text style={styles.errorText}>Select Available date</Text>}*/}
+                        <Text style={styles.info}>{room.enddate ? formatDate(room.enddate) : 'N/A'}</Text>
                     </View>
                 </View>
 
+                <View style={styles.rowContainer}>
+                    <View style={styles.inputContainer}><Text style={styles.label}>Phone1 *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="phone 1"
+                            value={room.phone1.toString()}
+                            onChangeText={(phone1) => handleTextChange(phone1, 'phone1')}
+                            keyboardType="numeric"
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}><Text style={styles.label}>Phone2</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="phone 2"
+                            value={room.phone2.toString()}
+                            onChangeText={(phone2) => handleTextChange(phone2, 'phone2')}
+                            keyboardType="numeric"
+                        />
+                    </View>
+                </View>
+                {errors.phone1 && <Text style={styles.errorText}>{errors.phone1}</Text>}
+
                 <Button
-                    title={saving ? "Saving..." : "Update"}
+                    title="Update"
                     onPress={updateProperty}
-                    disabled={isUpdateDisabled || saving}
-                    color="#007bff"
+                    disabled={isUpdateDisabled}
                 />
             </ScrollView>
         </View>
@@ -295,70 +308,66 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#fff',
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    info: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    input: {
-        height: 40,
-        borderColor: '#cccccc',
-        borderWidth: 1,
-        paddingHorizontal: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    inputError: {
-        borderColor: 'red',
-    },
-    inputContainer: {
-        flex: 1,
-    },
-    inputContainer1: {
-        flex: 1,
-        marginLeft: 20,
-    },
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: '#cccccc',
-        borderRadius: 5,
-        overflow: 'hidden',
-        marginBottom: 10,
-    },
-    picker: {
-        height: 40,
-        width: '100%',
-    },
-    rowContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 10,
-    },
-    datePickerInput: {
-        justifyContent: 'center',
-    },
-    datePickerText: {
-        fontSize: 16,
-    },
     errorContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    errorText: {
+        color: 'red',
+        marginVertical: 10,
+    },
+    inputContainer: {
+        marginVertical: 10,
+        flex: 1,
+    },
+    inputContainer1: {
+        marginVertical: 10,
+        flex: 1,
+    },
+    input: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        padding: 10,
+        fontSize: 16,
+    },
+    inputError: {
+        borderBottomColor: 'red',
+    },
+    pickerContainer: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    info: {
+        fontSize: 16,
+        marginVertical: 10,
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    datePickerButton: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        padding: 10,
+    },
+    datePickerText: {
+        fontSize: 16,
     },
 });
 

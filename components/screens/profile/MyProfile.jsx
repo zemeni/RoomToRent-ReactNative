@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import EditMarkerDetails from './EditMarkerDetails'; // Import your EditMarkerDetails component
 
 const MyProfile = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigation = useNavigation();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedProperty, setSelectedProperty] = useState(null);
 
     useEffect(() => {
         const fetchUserProperties = async () => {
@@ -29,7 +30,14 @@ const MyProfile = () => {
     }, []);
 
     const handlePropertyPress = (propertyId, type) => {
-        navigation.navigate('EditMarkerDetails', { propertyId, type, openModal:true });
+        setSelectedProperty({ propertyId, type });
+        setIsModalVisible(true);
+    };
+
+    const handleModalClose = () => {
+        console.log("inside handle modal close");
+        setIsModalVisible(false);
+        setSelectedProperty(null);
     };
 
     if (loading) {
@@ -49,19 +57,35 @@ const MyProfile = () => {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            {properties.map((property) => (
-                <TouchableOpacity
-                    key={property.id}
-                    style={styles.propertySnippet}
-                    onPress={() => handlePropertyPress(property.id, property.type)}
-                >
-                    <Text style={styles.propertyInfo}>{property.type === 'room' ? 'Room' : 'Unit'}</Text>
-                    <Text style={styles.propertyTitle}>{property.address}</Text>
-                    <Text style={styles.propertyInfo}>${property.price} per week</Text>
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
+        <View style={styles.container}>
+            <ScrollView>
+                {properties.map((property) => (
+                    <TouchableOpacity
+                        key={property.id}
+                        style={styles.propertySnippet}
+                        onPress={() => handlePropertyPress(property.id, property.type)}
+                    >
+                        <Text style={styles.propertyInfo}>{property.type === 'room' ? 'Room' : 'Unit'}</Text>
+                        <Text style={styles.propertyTitle}>{property.address}</Text>
+                        <Text style={styles.propertyInfo}>${property.price} per week</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+
+            <Modal
+                visible={isModalVisible}
+                animationType="slide"
+                onRequestClose={handleModalClose}
+            >
+                {selectedProperty && (
+                    <EditMarkerDetails
+                        propertyId={selectedProperty.propertyId}
+                        type={selectedProperty.type}
+                        onClose={handleModalClose}
+                    />
+                )}
+            </Modal>
+        </View>
     );
 };
 
