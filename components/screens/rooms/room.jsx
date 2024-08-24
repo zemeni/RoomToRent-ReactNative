@@ -76,7 +76,7 @@ const Room = () => {
     }, [state]);
 
 
-    console.log("marker in room page ", markers);
+    console.log("I am in room.jsx page and the markers are:: ", markers);
 
     return (
         <SafeAreaView style={styles.safeArea}>

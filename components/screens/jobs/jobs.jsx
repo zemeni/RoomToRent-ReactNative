@@ -9,23 +9,7 @@ const Jobs = () => {
 
     return (
         <View style={styles.container}>
-            <GooglePlacesAutocomplete
-                placeholder="Enter Address"
-                fetchDetails={true}
-                onPress={(data, details = null) => {
-                    console.log('Address selected:', data.description);
-                    // alert(`Address selected: ${data.description}`);
-                }}
-                query={{
-                    key: 'google api key',
-                    language: 'en',
-                }}
-                styles={{
-                    textInputContainer: styles.textInputContainer,
-                    textInput: styles.textInput,
-                    listView: styles.listView,
-                }}
-            />
+            <Text>This is a home page</Text>
         </View>
     );
 };

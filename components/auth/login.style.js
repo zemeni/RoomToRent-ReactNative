@@ -55,6 +55,14 @@ export const styles = StyleSheet.create({
         textAlign: 'left',
         width: '100%',
     },
+    loadingIndicator: {
+        position: 'absolute',
+        top: 50, // Adjust the position as needed
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        zIndex: 1, // Make sure it's on top
+    },
 });
 
 export default styles;

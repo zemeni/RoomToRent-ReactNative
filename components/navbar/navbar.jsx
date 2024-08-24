@@ -34,14 +34,14 @@ const Navbar = () => {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Jobs" component={Jobs} />
+      <Tab.Screen name="Home" component={Jobs} />
       <Tab.Screen
         name="Rooms"
         component={Room}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="MarketPlace" component={MarketPlace} />
-      <Tab.Screen name="Sports" component={sports} />
+      {/*<Tab.Screen name="MarketPlace" component={MarketPlace} />*/}
+      {/*<Tab.Screen name="Sports" component={sports} />*/}
       <Tab.Screen
         name="Profile"
         component={MyProfile}

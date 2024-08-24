@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from 'react-native';
 import axios from 'axios';
-import EditMarkerDetails from './EditMarkerDetails';
 import { useNavigation } from "@react-navigation/native";
 
 const MyProfile = () => {
