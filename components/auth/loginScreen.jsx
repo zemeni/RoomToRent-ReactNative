@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, Button, Alert, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native';
 import { TextInput } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
 import Toast from "react-native-toast-message";
 import {styles} from "./login.style";
@@ -31,6 +31,13 @@ const LoginScreen = () => {
 
         setIsValid(Object.keys(newErrors).length === 0);
     };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            setUsername('');
+            setPassword('');
+        }, [])
+    );
 
     const handleLogin = async () => {
         setLoading(true);

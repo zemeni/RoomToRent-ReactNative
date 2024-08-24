@@ -1,38 +1,32 @@
-import { Text, View, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {useEffect} from "react";
+import {Text, View, StyleSheet, Button} from "react-native";
+import {style} from "./jobs.style";
+import {useContext} from "react";
+import {AuthContext} from "../../auth/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 const Jobs = () => {
-    const inset = useSafeAreaInsets();
-    console.log("job is rendered");
+    console.log("job page  is rendered");
+
+    const navigation = useNavigation();
+    const { logout} = useContext(AuthContext)
+
+    const handleLogout = async () => {
+        await logout();
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+        });
+    }
 
     return (
-        <View style={styles.container}>
+        <View style={style.container}>
             <Text>This is a home page</Text>
+            <Button
+                title="Logout"
+                onPress={handleLogout}
+            />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingTop: 50,
-    },
-    textInputContainer: {
-        width: '100%',
-    },
-    textInput: {
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        paddingLeft: 10,
-        marginBottom: 10,
-    },
-    listView: {
-        backgroundColor: '#fff',
-    },
-});
 
 export default Jobs;

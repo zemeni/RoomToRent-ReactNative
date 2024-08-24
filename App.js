@@ -29,6 +29,7 @@ function AppNavigator() {
                     <Stack.Screen name="MyProfile" component={MyProfile} />
                     <Stack.Screen name="MarkerDetailsPage" component={MarkerDetailsPage} options={{title:'Property Details'}}/>
                     <Stack.Screen name="EditMarkerDetails" component={EditMarkerDetails} options={{title:'Edit Property Details'}}/>
+                    <Stack.Screen name="Login" component={LoginScreen} />
                 </>
             ) : (
                 <>
