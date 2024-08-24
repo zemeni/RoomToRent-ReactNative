@@ -33,9 +33,9 @@ const LoginScreen = () => {
     };
 
     const handleLogin = async () => {
-        setLoading(true); // Show loading indicator
+        setLoading(true);
         const success = await login(username, password);
-        setLoading(false); // Hide loading indicator
+        setLoading(false);
 
         if (success) {
             Toast.show({

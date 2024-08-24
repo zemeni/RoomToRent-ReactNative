@@ -57,12 +57,10 @@ export const styles = StyleSheet.create({
     },
     loadingIndicator: {
         position: 'absolute',
-        top: 50, // Adjust the position as needed
+        top: 50,
         left: 0,
         right: 0,
         alignItems: 'center',
-        zIndex: 1, // Make sure it's on top
+        zIndex: 1,
     },
 });
-
-export default styles;
