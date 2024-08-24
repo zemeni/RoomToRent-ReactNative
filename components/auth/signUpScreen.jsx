@@ -139,6 +139,7 @@ const SignUpScreen = () => {
                     secureTextEntry
                 />
                 {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+                <Text>Choose your state </Text>
                 <View style={styles.pickerContainer}>
                     <Picker
                         selectedValue={state}
