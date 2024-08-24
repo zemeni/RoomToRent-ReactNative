@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from 'axios';
 import { AuthContext } from "../../auth/AuthContext";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const EditMarkerDetails = ({ propertyId, type, onClose }) => {
     const [room, setRoom] = useState(null);
@@ -34,7 +35,6 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
     }, [propertyId, type]);
 
     useEffect(() => {
-        // Disable the update button if there are any errors or no changes have been made
         const isChanged = JSON.stringify(room) !== JSON.stringify(initialRoom);
         setIsUpdateDisabled(Object.keys(errors).length > 0 || !isChanged);
     }, [errors, room, initialRoom]);
@@ -43,10 +43,8 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
         console.log(field, value);
         const updatedRoom = { ...room, [field]: value };
 
-        // Initialize error object
         let newErrors = { ...errors };
 
-        // Validation
         if (field === 'price' || field === 'bathrooms') {
             const numericValue = parseFloat(value);
             if (isNaN(numericValue) || numericValue <= 0) {
@@ -119,6 +117,10 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
         }
     };
 
+    const handleBack = () => {
+        onClose();
+    };
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -131,13 +133,16 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
         return (
             <View style={styles.errorContainer}>
                 <Text style={styles.errorText}>Error loading room details.</Text>
-                <Button title="Back to List" onPress={onClose} />
+                <Button title="Back to List" onPress={() => navigation.goBack()} />
             </View>
         );
     }
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                <Icon name="arrow-back" size={24} color="#000" />
+            </TouchableOpacity>
             <ScrollView>
 
                 {/* Address */}
@@ -308,7 +313,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#ebedf1',
+    },
+    backButton: {
+        padding: 10,
+        position: 'absolute',
+        top: 20,
+        left: 10,
+        zIndex: 1,
     },
     loadingContainer: {
         flex: 1,
@@ -319,10 +331,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    errorText: {
-        color: 'red',
-        marginVertical: 10,
     },
     inputContainer: {
         marginVertical: 10,
