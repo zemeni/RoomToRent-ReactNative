@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    ScrollView,
+    Button,
+    ActivityIndicator,
+    TouchableOpacity,
+    Modal
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from 'axios';
 import { AuthContext } from "../../auth/AuthContext";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useRoute} from "@react-navigation/native";
 
-const EditMarkerDetails = ({ propertyId, type, onClose }) => {
+const EditMarkerDetails = ({ onClose }) => {
     const [room, setRoom] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -15,9 +26,14 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
     const [errors, setErrors] = useState({});
     const [initialRoom, setInitialRoom] = useState(null); // New state to track initial room data
     const { user } = useContext(AuthContext);
+    const [modalVisible, setModalVisible] = useState(false);
+    const route = useRoute();
+
+    const { propertyId, type } = route.params;
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
+            console.log("fetching room details ", propertyId, type);
             try {
                 const response = await axios.get(`http://192.168.1.108:4000/api/property/${propertyId}`, {
                     params: { type: type }
@@ -138,11 +154,12 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
         );
     }
 
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-                <Icon name="arrow-back" size={24} color="#000" />
-            </TouchableOpacity>
             <ScrollView>
 
                 {/* Address */}
@@ -305,6 +322,12 @@ const EditMarkerDetails = ({ propertyId, type, onClose }) => {
                     disabled={isUpdateDisabled}
                 />
             </ScrollView>
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={handleCloseModal}
+            ></Modal>
         </View>
     );
 };
@@ -313,7 +336,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#ebedf1',
+        backgroundColor: '#fff',
     },
     backButton: {
         padding: 10,

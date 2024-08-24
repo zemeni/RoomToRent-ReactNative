@@ -26,7 +26,7 @@ const ListView = ({markers}) => {
 
 
   const handlePress = (item) => {
-    navigation.navigate('MarkerDetailsPage', {roomId: item.id})
+    navigation.navigate('MarkerDetailsPage', {propertyId: item.id, type: item.type})
   }
 
   const renderItem = ({ item }) => (

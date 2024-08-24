@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from 'react-native';
 import axios from 'axios';
-import EditMarkerDetails from './EditMarkerDetails'; // Import your EditMarkerDetails component
+import EditMarkerDetails from './EditMarkerDetails';
+import { useNavigation } from "@react-navigation/native";
 
 const MyProfile = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProperty, setSelectedProperty] = useState(null);
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchUserProperties = async () => {
@@ -29,16 +32,26 @@ const MyProfile = () => {
         fetchUserProperties();
     }, []);
 
-    const handlePropertyPress = (propertyId, type) => {
-        setSelectedProperty({ propertyId, type });
-        setIsModalVisible(true);
-    };
-
     const handleModalClose = () => {
         console.log("inside handle modal close");
         setIsModalVisible(false);
         setSelectedProperty(null);
     };
+
+    const handlePropertyPress = (item) => {
+        navigation.navigate('EditMarkerDetails', { propertyId: item.id, type: item.type });
+    }
+
+    const renderPropertyItem = ({ item }) => (
+        <TouchableOpacity
+            style={styles.propertySnippet}
+            onPress={() => handlePropertyPress(item)}
+        >
+            <Text style={styles.propertyInfo}>{item.type === 'room' ? 'Room' : 'Unit'}</Text>
+            <Text style={styles.propertyTitle}>{item.address}</Text>
+            <Text style={styles.propertyInfo}>${item.price} per week</Text>
+        </TouchableOpacity>
+    );
 
     if (loading) {
         return (
@@ -58,33 +71,11 @@ const MyProfile = () => {
 
     return (
         <View style={styles.container}>
-            <ScrollView>
-                {properties.map((property) => (
-                    <TouchableOpacity
-                        key={property.id}
-                        style={styles.propertySnippet}
-                        onPress={() => handlePropertyPress(property.id, property.type)}
-                    >
-                        <Text style={styles.propertyInfo}>{property.type === 'room' ? 'Room' : 'Unit'}</Text>
-                        <Text style={styles.propertyTitle}>{property.address}</Text>
-                        <Text style={styles.propertyInfo}>${property.price} per week</Text>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
-
-            <Modal
-                visible={isModalVisible}
-                animationType="slide"
-                onRequestClose={handleModalClose}
-            >
-                {selectedProperty && (
-                    <EditMarkerDetails
-                        propertyId={selectedProperty.propertyId}
-                        type={selectedProperty.type}
-                        onClose={handleModalClose}
-                    />
-                )}
-            </Modal>
+            <FlatList
+                data={properties}
+                renderItem={renderPropertyItem}
+                keyExtractor={(item) => item.id.toString()}
+            />
         </View>
     );
 };
