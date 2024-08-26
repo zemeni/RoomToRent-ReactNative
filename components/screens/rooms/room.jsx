@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useMemo, useCallback} from 'react';
+import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, SafeAreaView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -12,71 +12,65 @@ import axios from 'axios';
 const TopTab = createMaterialTopTabNavigator();
 
 const stateCoordinates = {
-    NSW: { latitude: -33.8688, longitude: 151.2093 }, // Sydney
-    VIC: { latitude: -37.8136, longitude: 144.9631 }, // Melbourne
-    QLD: { latitude: -27.4698, longitude: 153.0251 }, // Brisbane
-    SA: { latitude: -34.9285, longitude: 138.6007 },  // Adelaide
-    WA: { latitude: -31.9505, longitude: 115.8605 },  // Perth
-    TAS: { latitude: -42.8821, longitude: 147.3272 }, // Hobart
-    NT: { latitude: -12.4634, longitude: 130.8456 },  // Darwin
-    ACT: { latitude: -35.2809, longitude: 149.1300 }  // Canberra
+    NSW: { latitude: -33.8688, longitude: 151.2093 },
+    VIC: { latitude: -37.8136, longitude: 144.9631 },
+    QLD: { latitude: -27.4698, longitude: 153.0251 },
+    SA: { latitude: -34.9285, longitude: 138.6007 },
+    WA: { latitude: -31.9505, longitude: 115.8605 },
+    TAS: { latitude: -42.8821, longitude: 147.3272 },
+    NT: { latitude: -12.4634, longitude: 130.8456 },
+    ACT: { latitude: -35.2809, longitude: 149.1300 }
 };
 
 const Room = () => {
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [state, setState] = useState(user?.userProfile?.state || 'NSW');
     const [markers, setMarkers] = useState([]);
-    const [mapLocation, setMapLocation] = useState(null);
+    const [mapLocation, setMapLocation] = useState(stateCoordinates[state]);
     const [userLocation, setUserLocation] = useState(null);
 
-    console.log("why I am inside the room page?");
+
+    const fetchRoomData = useCallback(async (selectedState) => {
+        try {
+            const response = await axios.get(`http://192.168.1.108:4000/api/properties?state=${selectedState}`);
+            const fetchedMarkers = response.data.map((room) => ({
+                id: room.id.toString(),
+                coordinate: {
+                    latitude: room.latitude,
+                    longitude: room.longitude
+                },
+                price: room.price,
+                type: room.type
+            }));
+            setMarkers(fetchedMarkers);
+        } catch (error) {
+            console.error("Error fetching rooms data: ", error.message);
+        }
+    }, []);
+
+    const getUserLocation = useCallback(async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert(
+                'Permission to access location was denied. Please enable it in settings to continue.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
+        let { coords } = await Location.getCurrentPositionAsync({});
+        setUserLocation({ latitude: coords.latitude, longitude: coords.longitude });
+    }, []);
 
     useEffect(() => {
-        const getUserLocation = async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert(
-                    'Permission to access location was denied. Please enable it in settings to continue.',
-                    [{ text: 'OK' }]
-                );
-                return;
-            }
-
-            let { coords } = await Location.getCurrentPositionAsync({});
-            setUserLocation({ latitude: coords.latitude, longitude: coords.longitude });
-        };
-
-        const fetchRoomData = async (selectedState) => {
-            try {
-                const response = await axios.get(`http://192.168.1.108:4000/api/properties?state=${selectedState}`); // Replace with your IP address
-                console.log("rooms response is ", response.data);
-
-                const fetchedMarkers = response.data.map((room, index) => ({
-                    id: room.id.toString(),
-                    coordinate: {
-                        latitude: room.latitude,
-                        longitude: room.longitude
-                    },
-                    price: room.price,
-                    type: room.type
-                }));
-
-                setMarkers(fetchedMarkers);
-            } catch (error) {
-                console.error("Error fetching rooms data: ", error.message);
-            }
-        };
         fetchRoomData(state);
         getUserLocation();
-    }, [state]);
+    }, [state, fetchRoomData, getUserLocation]);
 
-    useEffect(() => {
-        console.log("you've chosen ", state);
-        setMapLocation(stateCoordinates[state]);
-    }, [state]);
-
-
-    console.log("I am in room.jsx page and the markers are:: ", markers);
+    const handleStateChange = useCallback((itemValue) => {
+        setState(itemValue);
+        setMapLocation(stateCoordinates[itemValue]);
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -84,7 +78,7 @@ const Room = () => {
                 <Picker
                     selectedValue={state}
                     style={styles.picker}
-                    onValueChange={(itemValue) => setState(itemValue)}
+                    onValueChange={handleStateChange}
                 >
                     <Picker.Item label="New South Wales" value="NSW" />
                     <Picker.Item label="Victoria" value="VIC" />

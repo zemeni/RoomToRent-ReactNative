@@ -1,21 +1,21 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
-    View,
+    FlatList,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
-    Image,
-    ScrollView,
-    KeyboardAvoidingView,
-    Platform,
-    FlatList
+    View
 } from 'react-native';
 import {FontAwesome} from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import {styles} from "./postRoomForm.style";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Picker} from "@react-native-picker/picker";
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 
 const DEFAULT_ROOM = {
@@ -104,22 +104,32 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
         setDatePickerVisibility(true);
     };
 
+    const handleDateChange = (selectedDate, roomId) => {
+        const newDate = new Date(selectedDate);
+        const updatedRooms = rooms.map(room => {
+            if (room.id === roomId) {
+                const updatedRoom = { ...room, startDate: newDate };
+
+                // Calculate and set endDate
+                const endDate = new Date(newDate);
+                endDate.setDate(newDate.getDate() + 7); // Add 7 days to the start date
+                updatedRoom.endDate = endDate;
+
+                setDatePickerVisibility(false);
+                return updatedRoom;
+            }
+            return room;
+        });
+        setRooms(updatedRooms);
+    };
+
     const handleTextChange = (value, roomId, field) => {
         if (field === "address") {
             setAddress(value);
         } else {
             const updatedRooms = rooms.map(room => {
                 if (room.id === roomId) {
-                    const updatedRoom = {...room, [field]: value};
-                    // If the field is 'startDate', calculate 'endDate' (available to)
-                    if (field === 'startDate') {
-                        const startDate = new Date(value);
-                        const endDate = new Date(startDate);
-                        endDate.setDate(startDate.getDate() + 7); // Add 7 days to the start date
-                        updatedRoom.endDate = endDate;
-                        setDatePickerVisibility(false);
-                    }
-                    return updatedRoom;
+                    return {...room, [field]: value};
                 }
                 return room;
             });
@@ -312,12 +322,13 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                     >
                         <Text>{room.startDate ? room.startDate.toLocaleDateString() : 'Select Date'}</Text>
                     </TouchableOpacity>
-                    <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
+                    {isDatePickerVisible && <DateTimePicker
                         mode="date"
-                        onConfirm={(startDate) => handleTextChange(startDate, room.id, 'startDate')}
+                        onChange={(event, startDate) => handleDateChange(startDate, room.id)}
                         onCancel={() => setDatePickerVisibility(false)}
-                    />
+                        minimumDate={new Date()}
+                        maximumDate={new Date(Date.now() + 60 *24 *60 *60 *1000)}
+                        value={room.startDate || new Date()}/>}
                     {validationErrors[room.id]?.startDate &&
                         <Text style={styles.errorText}>Select Available date</Text>}
                 </View>

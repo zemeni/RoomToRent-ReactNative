@@ -53,7 +53,7 @@ const MapViewTab = ({markers, mapLocation, userLocation}) => {
 
     const handlePostRoom = () => {
         if (!user) {
-            navigation.navigate('Login', {fromScreen: 'Rooms'});
+            navigation.navigate('Login');
         } else {
             setIsFormVisible(true); // Show the form
         }
