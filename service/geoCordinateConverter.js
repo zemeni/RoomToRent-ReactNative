@@ -1,8 +1,10 @@
 import axios from "axios";
 
 const getCoordinatesFromAddress = async (address) => {
-   const apiKey = '';
-   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+  const apiKey = "";
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+    address
+  )}&key=${apiKey}`;
 
   try {
     const response = await axios.get(url);
