@@ -39,8 +39,16 @@ export const styles = StyleSheet.create({
         borderColor: 'gray',
         borderRadius: 5,
         marginBottom: 12,
-        height: 40, // Adjust the height to match the input field
-        justifyContent: 'center', // Center the picker vertically
+        // height: 40, // Adjust the height to match the input field
+        // justifyContent: 'center', // Center the picker vertically
+    },
+    dropdown: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        backgroundColor: '#dadcdf',
+        height: 40,
     },
     label: {
         fontWeight: 'bold',

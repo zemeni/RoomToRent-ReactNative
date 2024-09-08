@@ -98,10 +98,10 @@ const Room = () => {
 
             <TopTab.Navigator>
                 <TopTab.Screen name="Map" >
-                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation}  userLocation={userLocation}/>}
+                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation}  userLocation={userLocation} fetchRoomData = {()=> fetchRoomData(state)} />}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
-                    {props => <ListView {...props} markers={markers}/>}
+                    {props => <ListView {...props} markers={markers} fetchRoomData = {()=> fetchRoomData(state)}/>}
                 </TopTab.Screen>
             </TopTab.Navigator>
         </SafeAreaView>

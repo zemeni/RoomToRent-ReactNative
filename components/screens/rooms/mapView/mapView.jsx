@@ -11,7 +11,7 @@ import Toast from "react-native-toast-message";
 import CustomMarker from "./customMarker";
 
 
-const MapViewTab = ({markers, mapLocation, userLocation}) => {
+const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
     const [mapType, setMapType] = useState('standard'); // Default map type
     const [isFormVisible, setIsFormVisible] = useState(false);
     const mapRef = useRef(null);
@@ -85,10 +85,13 @@ const MapViewTab = ({markers, mapLocation, userLocation}) => {
             Toast.show({
                 type: 'success',
                 position: 'top',
-                text1: `Room Added Successfully`,
-                text2: 'Check your profile for your entries',
-                visibilityTime: 5000,
+                text1: `Property Added Successfully`,
+                text2: 'Check your profile for your properties',
+                visibilityTime: 3000,
             });
+            if(fetchRoomData) {
+                await fetchRoomData();
+            }
             return true;
         } catch (error) {
             console.error('Signup error:', error);

@@ -14,8 +14,9 @@ import {FontAwesome} from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import {styles} from "./postRoomForm.style";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {Picker} from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Icon from "react-native-vector-icons/Ionicons";
+import ModalSelector from "react-native-modal-selector";
 
 
 const DEFAULT_ROOM = {
@@ -42,6 +43,27 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
     const MAX_IMAGES = 5;
+
+    const genderOptions = [
+        { key: 'male', label: 'Male' },
+        { key: 'female', label: 'Female' },
+        { key: 'all', label: 'Any Gender' },
+    ];
+
+    const includingOptions = [
+        { key: '1', label: 'Yes' },
+        { key: '0', label: 'No' },
+    ];
+
+    const roomTypeOptions = [
+        { key: 'Single', label: 'Single' },
+        { key: 'Double', label: 'Double' },
+    ];
+
+    const furnishedOptions = [
+        { key: '1', label: 'Yes' },
+        { key: '0', label: 'No' },
+    ];
 
     const validateField = useCallback((field, value) => {
         switch (field) {
@@ -211,15 +233,17 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
 
             <Text style={styles.label}>Only for *</Text>
             <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={room.gender}
-                    style={styles.picker}
-                    onValueChange={(value) => handleTextChange(value, room.id, 'gender')}
-                >
-                    <Picker.Item label="Male" value="male"/>
-                    <Picker.Item label="Female" value="female"/>
-                    <Picker.Item label="Any Gender" value="all"/>
-                </Picker>
+                <ModalSelector data={genderOptions}
+                               // initValue={genderOptions.find(g => g.key === room.gender)?.label || 'Select gender'}
+                               onChange={(option) => handleTextChange(option.key, room.id, 'gender')}
+                               >
+                    <View style={styles.dropdown}>
+                        <Text style={styles.inputText}>
+                            {genderOptions.find(g => g.key === room.gender)?.label || 'Select Gender'}
+                        </Text>
+                        <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                    </View>
+                </ModalSelector>
             </View>
 
 
@@ -235,17 +259,20 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                     />
                 </View>
 
-                <View style={styles.inputContainer1}>
+                <View style={styles.inputContainer}>
                     <Text style={styles.label}>Including *</Text>
                     <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={room.including}
-                            style={styles.picker}
-                            onValueChange={(value) => handleTextChange(value, room.id, 'including')}
-                        >
-                            <Picker.Item label="Yes" value="1"/>
-                            <Picker.Item label="No" value="0"/>
-                        </Picker>
+                        <ModalSelector data={includingOptions}
+                                       initValue={includingOptions.find(option => option.key === room.including)?.label || 'Select Option'}
+                                       onChange={(option) => handleTextChange(option.key, room.id, 'including')}
+                                       >
+                            <View style={styles.dropdown}>
+                                <Text style={styles.inputText}>
+                                    {includingOptions.find(option => option.key === room.including)?.label || 'Select Option'}
+                                </Text>
+                                <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                            </View>
+                        </ModalSelector>
                     </View>
                 </View>
             </View>
@@ -256,28 +283,36 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Room Type *</Text>
                     <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={room.roomType}
-                            style={styles.picker}
-                            onValueChange={(value) => handleTextChange(value, room.id, 'roomType')}
+                        <ModalSelector
+                            data={roomTypeOptions}
+                            initValue={roomTypeOptions.find(option => option.key === room.roomType)?.label || 'Select Room Type'}
+                            onChange={(option) => handleTextChange(option.key, room.id, 'roomType')}
                         >
-                            <Picker.Item label="Single" value="Single"/>
-                            <Picker.Item label="Double" value="Double"/>
-                        </Picker>
+                            <View style={styles.dropdown}>
+                                <Text style={styles.inputText}>
+                                    {roomTypeOptions.find(option => option.key === room.roomType)?.label || 'Select Room Type'}
+                                </Text>
+                                <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                            </View>
+                        </ModalSelector>
                     </View>
                 </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Furnished *</Text>
                     <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={room.furnished}
-                            style={styles.picker}
-                            onValueChange={(value) => handleTextChange(value, room.id, 'furnished')}
+                        <ModalSelector
+                            data={furnishedOptions}
+                            initValue={furnishedOptions.find(option => option.key === room.furnished)?.label || 'Select Option'}
+                            onChange={(option) => handleTextChange(option.key, room.id, 'furnished')}
                         >
-                            <Picker.Item label="Yes" value="1"/>
-                            <Picker.Item label="No" value="0"/>
-                        </Picker>
+                            <View style={styles.dropdown}>
+                                <Text style={styles.inputText}>
+                                    {furnishedOptions.find(option => option.key === room.furnished)?.label || 'Select Option'}
+                                </Text>
+                                <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                            </View>
+                        </ModalSelector>
                     </View>
                 </View>
             </View>
@@ -330,7 +365,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                         maximumDate={new Date(Date.now() + 60 *24 *60 *60 *1000)}
                         value={room.startDate || new Date()}/>}
                     {validationErrors[room.id]?.startDate &&
-                        <Text style={styles.errorText}>Select Available date</Text>}
+                        <Text style={styles.errorText}>Select Available </Text>}
                 </View>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Available to *</Text>
@@ -413,13 +448,21 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                                 language: 'en',
                                 components: {country: 'au'}
                             }}
-                            styles={{textInput: {flex: 1, backgroundColor: '#d0d4d8'}}}
+                            styles={{textInput: {flex: 1, ...Platform.select({
+                                        ios: {
+                                            backgroundColor: '#b3b5b6', // Placeholder text color for iOS
+                                            color: '#131313'
+                                        },
+                                        android: {
+                                            backgroundColor: '#ebeced', // Placeholder text color for Android
+                                            color: '#131313'
+                                        },
+                                    }),}}}
                         />
                         {validationErrors.address && <Text style={styles.errorText}>Address is required.</Text>}
                     </>
                 }
                 ListFooterComponent={
-                    rooms.length > 0 && (
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.button}
@@ -441,7 +484,6 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                                 <Text style={styles.buttonText}>Cancel</Text>
                             </TouchableOpacity>
                         </View>
-                    )
                 }
                 keyboardShouldPersistTaps={"handled"}
             />

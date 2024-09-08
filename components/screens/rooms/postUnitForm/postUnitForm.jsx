@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { styles } from "./postUnitForm.style";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const PostUnitForm = ({ onSubmit, onCancel }) => {
     const [units, setUnits] = useState([{
@@ -199,7 +200,16 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                     language: 'en',
                     components: { country: 'au' }
                 }}
-                styles={{ textInput: { flex: 1, backgroundColor: '#8d9dae' } }}
+                styles={{textInput: {flex: 1, ...Platform.select({
+                            ios: {
+                                backgroundColor: '#b3b5b6', // Placeholder text color for iOS
+                                color: '#131313'
+                            },
+                            android: {
+                                backgroundColor: '#ebeced', // Placeholder text color for Android
+                                color: '#131313'
+                            },
+                        }),}}}
             />
             {validationErrors[unit.id]?.address && <Text style={styles.errorText}>Address is required.</Text>}
 
@@ -280,14 +290,16 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                     >
                         <Text>{unit.startDate ? unit.startDate.toLocaleDateString() : 'Select Date'}</Text>
                     </TouchableOpacity>
-                    <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
+                    {isDatePickerVisible && <DateTimePicker
                         mode="date"
-                        onConfirm={(startDate) => handleTextChange(startDate, unit.id, 'startDate')}
+                        onChange={(event, startDate) => handleTextChange(startDate, unit.id, 'startDate')}
                         onCancel={() => setDatePickerVisibility(false)}
-                    />
+                        minimumDate={new Date()}
+                        maximumDate={new Date(Date.now() + 60 *24 *60 *60 *1000)}
+                        value={unit.startDate || new Date()}
+                    />}
                     {validationErrors[unit.id]?.startDate &&
-                        <Text style={styles.errorText}>Select Available date</Text>}
+                        <Text style={styles.errorText}>Select Available </Text>}
                 </View>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Available to *</Text>

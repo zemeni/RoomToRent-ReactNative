@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const CustomMarker = ({ price , type}) => {
-    const badgeColor = type === 'room' ? '#30c189' : type === 'unit' ? '#9d30c1' : '#3498db';
+    const badgeColor = type === 'room' ? '#8030c1' : type === 'unit' ? '#47f105' : '#3498db';
     return (
         <View style={styles.markerContainer}>
             <View style={[styles.badge, { backgroundColor: badgeColor }]}>
