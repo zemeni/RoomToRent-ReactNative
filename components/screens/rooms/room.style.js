@@ -1,4 +1,4 @@
-import {StyleSheet} from "react-native";
+import {Platform, StyleSheet} from "react-native";
 
 export const styles = StyleSheet.create({
   safeArea: {
@@ -21,14 +21,28 @@ export const styles = StyleSheet.create({
     color: "red",
   },
   pickerContainer: {
-    marginTop: 35,
+    marginTop: Platform.OS === 'ios' ? 0 : 35 ,
     borderWidth: 1,
     borderColor: 'gray',
-    borderRadius: 5,
-    marginBottom: 12,
+    borderRadius: 10,
+    padding: 10,
+    marginLeft:5,
+    marginRight: 5
+  },
+  pickerText: {
+    fontSize: 16,
+    color: '#000',
   },
   picker: {
     height: 50,
     width: '100%',
   },
+  dropdown: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dropdownIcon: {
+    marginLeft: 10
+  }
 });

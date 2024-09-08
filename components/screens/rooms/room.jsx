@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { View, SafeAreaView, Alert } from 'react-native';
+import { View, SafeAreaView, Alert, Text} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as Location from 'expo-location';
 import MapViewTab from './mapView/mapView';
@@ -8,6 +8,8 @@ import ListView from './listView/listView';
 import { styles } from './room.style';
 import { AuthContext } from '../../auth/AuthContext';
 import axios from 'axios';
+import ModalSelector from 'react-native-modal-selector';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -29,6 +31,16 @@ const Room = () => {
     const [mapLocation, setMapLocation] = useState(stateCoordinates[state]);
     const [userLocation, setUserLocation] = useState(null);
 
+    const stateOptions = [
+        { key: 'NSW', label: 'New South Wales' },
+        { key: 'VIC', label: 'Victoria' },
+        { key: 'QLD', label: 'Queensland' },
+        { key: 'SA', label: 'South Australia' },
+        { key: 'WA', label: 'Western Australia' },
+        { key: 'TAS', label: 'Tasmania' },
+        { key: 'NT', label: 'Northern Territory' },
+        { key: 'ACT', label: 'Australian Capital Territory' }
+    ];
 
     const fetchRoomData = useCallback(async (selectedState) => {
         try {
@@ -75,20 +87,13 @@ const Room = () => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={state}
-                    style={styles.picker}
-                    onValueChange={handleStateChange}
-                >
-                    <Picker.Item label="New South Wales" value="NSW" />
-                    <Picker.Item label="Victoria" value="VIC" />
-                    <Picker.Item label="Queensland" value="QLD" />
-                    <Picker.Item label="South Australia" value="SA" />
-                    <Picker.Item label="Western Australia" value="WA" />
-                    <Picker.Item label="Tasmania" value="TAS" />
-                    <Picker.Item label="Northern Territory" value="NT" />
-                    <Picker.Item label="Australian Capital Territory" value="ACT" />
-                </Picker>
+                <ModalSelector data={stateOptions}
+                               onChange={(option) => handleStateChange(option.key)} >
+                    <View style={styles.dropdown}>
+                        <Text style={styles.pickerText}>{stateOptions.find(s => s.key === state).label}</Text>
+                        <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon}/>
+                    </View>
+                </ModalSelector>
             </View>
 
             <TopTab.Navigator>
