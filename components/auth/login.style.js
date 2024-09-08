@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
         marginBottom: 12,
         paddingHorizontal: 8,
         borderRadius: 5,
+        backgroundColor: '#dadcdf',
     },
     pickerContainer: {
         borderWidth: 1,

@@ -23,12 +23,25 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         paddingHorizontal: 8,
         borderRadius: 5,
+        backgroundColor: '#dadcdf',
     },
     pickerContainer: {
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
         marginBottom: 12,
+    },
+    dropdown: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        backgroundColor: '#dadcdf',
+        height: 40,
+    },
+    inputText: {
+        color: '#000',
+        fontSize: 16,
     },
     picker: {
         height: 50,

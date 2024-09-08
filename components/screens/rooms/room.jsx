@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { View, SafeAreaView, Alert, Text} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, SafeAreaView, Alert, Text } from 'react-native';
 import * as Location from 'expo-location';
 import MapViewTab from './mapView/mapView';
 import ListView from './listView/listView';
@@ -87,21 +86,25 @@ const Room = () => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.pickerContainer}>
-                <ModalSelector data={stateOptions}
-                               onChange={(option) => handleStateChange(option.key)} >
+                <ModalSelector
+                    data={stateOptions}
+                    onChange={(option) => handleStateChange(option.key)}
+                >
                     <View style={styles.dropdown}>
-                        <Text style={styles.pickerText}>{stateOptions.find(s => s.key === state).label}</Text>
-                        <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon}/>
+                        <Text style={styles.pickerText}>
+                            {stateOptions.find(s => s.key === state)?.label || 'Select State'}
+                        </Text>
+                        <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
                     </View>
                 </ModalSelector>
             </View>
 
             <TopTab.Navigator>
-                <TopTab.Screen name="Map" >
-                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation}  userLocation={userLocation} fetchRoomData = {()=> fetchRoomData(state)} />}
+                <TopTab.Screen name="Map">
+                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation} fetchRoomData={() => fetchRoomData(state)} />}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
-                    {props => <ListView {...props} markers={markers} fetchRoomData = {()=> fetchRoomData(state)}/>}
+                    {props => <ListView {...props} markers={markers} fetchRoomData={() => fetchRoomData(state)} />}
                 </TopTab.Screen>
             </TopTab.Navigator>
         </SafeAreaView>

@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
-import { Picker } from '@react-native-picker/picker';
 import styles from './signUp.style';
 import Toast from 'react-native-toast-message';
+import Icon from "react-native-vector-icons/Ionicons";
+import ModalSelector from "react-native-modal-selector";
+import countriesStates from './countriesStates.json'; // Importing the JSON file
 
 const SignUpScreen = () => {
     const { signUp } = useContext(AuthContext);
@@ -15,13 +17,37 @@ const SignUpScreen = () => {
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
     const [phone, setPhone] = useState('');
-    const [state, setState] = useState('NSW');
+    const [country, setCountry] = useState('AUS');  // Default to Australia
+    const [state, setState] = useState('NSW');      // Default to New South Wales
     const [isValid, setIsValid] = useState(false);
     const [errors, setErrors] = useState({});
     const navigation = useNavigation();
     const route = useRoute();
     const fromScreen = route.params?.fromScreen || 'MyProfile';
 
+    // Extract country and state data from the JSON file
+    const countryOptions = countriesStates.countries.map(country => ({
+        key: country.key,
+        label: country.label
+    }));
+
+    const getStateOptions = (countryKey) => {
+        const selectedCountry = countriesStates.countries.find(c => c.key === countryKey);
+        return selectedCountry ? selectedCountry.states : [];
+    };
+
+    // Update state options based on the selected country
+    useEffect(() => {
+        if (country === 'AUS') {
+            setState('NSW'); // Default state for Australia
+        } else if (country === 'CAN') {
+            setState('ON');  // Default state for Canada (Ontario)
+        } else if (country === 'USA') {
+            setState('CA');  // Default state for USA (California)
+        }
+    }, [country]);
+
+    // Validate the form when inputs change
     useEffect(() => {
         validateForm();
     }, [email, password, confirmPassword, firstname, lastname, phone]);
@@ -65,6 +91,7 @@ const SignUpScreen = () => {
                 firstname,
                 lastname,
                 phone,
+                country,
                 state,
             };
 
@@ -139,22 +166,38 @@ const SignUpScreen = () => {
                     secureTextEntry
                 />
                 {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-                <Text>Choose your state </Text>
+
+
+                <Text>Choose your Country </Text>
                 <View style={styles.pickerContainer}>
-                    <Picker
-                        selectedValue={state}
-                        style={styles.picker}
-                        onValueChange={(itemValue) => setState(itemValue)}
+                    <ModalSelector
+                        data={countryOptions}
+                        initValue={countryOptions.find(c => c.key === country)?.label}
+                        onChange={(option) => setCountry(option.key)}
                     >
-                        <Picker.Item label="New South Wales" value="NSW" />
-                        <Picker.Item label="Victoria" value="VIC" />
-                        <Picker.Item label="Queensland" value="QLD" />
-                        <Picker.Item label="South Australia" value="SA" />
-                        <Picker.Item label="Western Australia" value="WA" />
-                        <Picker.Item label="Tasmania" value="TAS" />
-                        <Picker.Item label="Northern Territory" value="NT" />
-                        <Picker.Item label="Australian Capital Territory" value="ACT" />
-                    </Picker>
+                        <View style={styles.dropdown}>
+                            <Text style={styles.inputText}>
+                                {countryOptions.find(c => c.key === country)?.label || 'Australia'}
+                            </Text>
+                            <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                        </View>
+                    </ModalSelector>
+                </View>
+
+                <Text>Choose your State </Text>
+                <View style={styles.pickerContainer}>
+                    <ModalSelector
+                        data={getStateOptions(country)}
+                        initValue={getStateOptions(country).find(s => s.key === state)?.label}
+                        onChange={(option) => setState(option.key)}
+                    >
+                        <View style={styles.dropdown}>
+                            <Text style={styles.inputText}>
+                                {getStateOptions(country).find(s => s.key === state)?.label || 'New South Wales'}
+                            </Text>
+                            <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                        </View>
+                    </ModalSelector>
                 </View>
                 <TouchableOpacity
                     style={[styles.button, !isValid && styles.buttonDisabled]}
