@@ -12,10 +12,7 @@ const Jobs = () => {
 
     const handleLogout = async () => {
         await logout();
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-        });
+        navigation.navigate('Login');
     }
 
     return (

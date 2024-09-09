@@ -7,7 +7,7 @@ import styles from './signUp.style';
 import Toast from 'react-native-toast-message';
 import Icon from "react-native-vector-icons/Ionicons";
 import ModalSelector from "react-native-modal-selector";
-import countriesStates from './countriesStates.json'; // Importing the JSON file
+import countriesStates from '../../assets/countriesStates.json'; // Importing the JSON file
 
 const SignUpScreen = () => {
     const { signUp } = useContext(AuthContext);

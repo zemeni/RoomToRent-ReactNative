@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext,useMemo, useCallback } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, SafeAreaView, Alert, Text } from 'react-native';
 import * as Location from 'expo-location';
@@ -9,6 +9,7 @@ import { AuthContext } from '../../auth/AuthContext';
 import axios from 'axios';
 import ModalSelector from 'react-native-modal-selector';
 import Icon from 'react-native-vector-icons/Ionicons';
+import countriesStates from '../../../assets/countriesStates.json';
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -25,12 +26,40 @@ const stateCoordinates = {
 
 const Room = () => {
     const { user } = useContext(AuthContext);
-    const [state, setState] = useState(user?.userProfile?.state || 'NSW');
-    const [markers, setMarkers] = useState([]);
-    const [mapLocation, setMapLocation] = useState(stateCoordinates[state]);
-    const [userLocation, setUserLocation] = useState(null);
 
-    const stateOptions = [
+    // If user is null, the page should not continue rendering
+    if (!user || !user.userProfile) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <Text>User not logged in.</Text>
+            </SafeAreaView>
+        );
+    }
+
+
+    const userCountryKey = user.userProfile.country;
+    const userStateKey = user.userProfile.state;
+
+    console.log("userCountryKey is ", userCountryKey);
+    console.log("userStateKey is ", userStateKey);
+    // Get the country and state data dynamically from JSON
+    const country = useMemo(() => countriesStates.countries.find(c => c.key === userCountryKey), [userCountryKey]);
+    console.log("country is ", country);
+    const stateOptions = useMemo(() => country.states.map(s => ({ key: s.key, label: s.label })), [country]);
+    const defaultState = useMemo(() => country.states.find(s => s.key === userStateKey), [country, userStateKey]);
+
+
+
+    // const [country, setCountry] = useState(user.userProfile.country);
+    const [state, setState] = useState(defaultState.key);
+    const [markers, setMarkers] = useState([]);
+    const [userLocation, setUserLocation] = useState(null);
+    const [mapLocation, setMapLocation] = useState({
+        latitude: defaultState.latitude,
+        longitude: defaultState.longitude
+    });
+
+    /*const stateOptions = [
         { key: 'NSW', label: 'New South Wales' },
         { key: 'VIC', label: 'Victoria' },
         { key: 'QLD', label: 'Queensland' },
@@ -39,7 +68,7 @@ const Room = () => {
         { key: 'TAS', label: 'Tasmania' },
         { key: 'NT', label: 'Northern Territory' },
         { key: 'ACT', label: 'Australian Capital Territory' }
-    ];
+    ];*/
 
     const fetchRoomData = useCallback(async (selectedState) => {
         try {
@@ -79,28 +108,28 @@ const Room = () => {
     }, [state, fetchRoomData, getUserLocation]);
 
     const handleStateChange = useCallback((itemValue) => {
+        const selectedState = country.states.find(s => s.key === itemValue);
         setState(itemValue);
-        setMapLocation(stateCoordinates[itemValue]);
-    }, []);
+        setMapLocation({
+            latitude: selectedState.latitude,
+            longitude: selectedState.longitude
+        });
+    }, [country.states]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.pickerContainer}>
-                <ModalSelector
-                    data={stateOptions}
-                    onChange={(option) => handleStateChange(option.key)}
-                >
+                <ModalSelector data={stateOptions}
+                               onChange={(option) => handleStateChange(option.key)} >
                     <View style={styles.dropdown}>
-                        <Text style={styles.pickerText}>
-                            {stateOptions.find(s => s.key === state)?.label || 'Select State'}
-                        </Text>
-                        <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                        <Text style={styles.pickerText}>{stateOptions.find(s => s.key === state).label}</Text>
+                        <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon}/>
                     </View>
                 </ModalSelector>
             </View>
 
             <TopTab.Navigator>
-                <TopTab.Screen name="Map">
+                <TopTab.Screen name="Map" >
                     {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation} fetchRoomData={() => fetchRoomData(state)} />}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
