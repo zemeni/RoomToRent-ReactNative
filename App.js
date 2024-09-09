@@ -12,8 +12,8 @@ import { useContext, useEffect } from "react";
 import DetailsPage from "./components/screens/rooms/listView/detailsPage";
 import Toast from 'react-native-toast-message';
 import MarkerDetailsPage from "./components/screens/rooms/mapView/markerDetailsPage";
-import EditMarkerDetails from "./components/screens/profile/EditMarkerDetails";
-import MyProfile from "./components/screens/profile/MyProfile";
+import EditProfileDetails from "./components/screens/profile/EditProfileDetails";
+import MyProperty from "./components/screens/profile/MyProperty";
 
 const Stack = createStackNavigator();
 
@@ -26,9 +26,9 @@ function AppNavigator() {
                 <>
                     <Stack.Screen name="Main" component={Navbar} options={{ headerShown: false }} />
                     <Stack.Screen name="DetailsPage" component={DetailsPage} />
-                    <Stack.Screen name="MyProfile" component={MyProfile} />
+                    <Stack.Screen name="MyProperty" component={MyProperty} />
                     <Stack.Screen name="MarkerDetailsPage" component={MarkerDetailsPage} options={{title:'Property Details'}}/>
-                    <Stack.Screen name="EditMarkerDetails" component={EditMarkerDetails} options={{title:'Edit Property Details'}}/>
+                    <Stack.Screen name="EditProfileDetails" component={EditProfileDetails} options={{title:'Edit Property Details'}}/>
                     <Stack.Screen name="Login" component={LoginScreen} />
                 </>
             ) : (

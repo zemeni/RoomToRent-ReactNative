@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, Button} from 'react-native';
 import axios from 'axios';
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
+import {AuthContext} from "../../auth/AuthContext";
 
-const MyProfile = () => {
+const MyProperty = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedProperty, setSelectedProperty] = useState(null);
 
+    const {user, logout} = useContext(AuthContext);
     const navigation = useNavigation();
 
     useEffect(() => {
         const fetchUserProperties = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/neupanebabu828@gmail.com`, {
+                console.log("user details in profile page", user);
+                const {email} = user.userProfile;
+                const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/${email}`, {
                     params: {
                         type: 'room'
                     }
                 });
-                console.log("response in MyProfile is ", response.data);
+                console.log("response in MyProperty is ", response.data);
                 setProperties(response.data);
                 setLoading(false);
             } catch (error) {
@@ -38,10 +42,14 @@ const MyProfile = () => {
     };
 
     const handlePropertyPress = (item) => {
-        navigation.navigate('EditMarkerDetails', { propertyId: item.id, type: item.type });
-    }
+        navigation.navigate('EditProfileDetails', {
+            propertyId: item.id,
+            type: item.type,
+            onClose: () => navigation.goBack() // Pass the onClose function
+        });
+    };
 
-    const renderPropertyItem = ({ item }) => (
+    const renderPropertyItem = ({item}) => (
         <TouchableOpacity
             style={styles.propertySnippet}
             onPress={() => handlePropertyPress(item)}
@@ -68,12 +76,24 @@ const MyProfile = () => {
         );
     }
 
+    const handleLogout = async () => {
+        await logout();
+        navigation.navigate('Login');
+    }
+
     return (
         <View style={styles.container}>
             <FlatList
                 data={properties}
                 renderItem={renderPropertyItem}
                 keyExtractor={(item) => item.id.toString()}
+                ListFooterComponent={() => (
+                    <View style={styles.footerContainer}>
+                        <Button
+                        title="Logout"
+                        onPress={handleLogout}
+                    /></View>
+                )}
             />
         </View>
     );
@@ -84,6 +104,10 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#ebedf1',
+    },
+    footerContainer: {
+        marginTop: 50, // Adjust the margin as needed
+        paddingHorizontal: 10, // Optional: Add horizontal padding if needed
     },
     loadingContainer: {
         flex: 1,
@@ -112,4 +136,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MyProfile;
+export default MyProperty;

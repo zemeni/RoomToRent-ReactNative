@@ -5,7 +5,7 @@ import MarketPlace from "../screens/marketplace/MarketPlace";
 import { Ionicons } from "@expo/vector-icons";
 import * as React from "react";
 import sports from "../screens/sports/Sports";
-import MyProfile from "../screens/profile/MyProfile";
+import MyProperty from "../screens/profile/MyProperty";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +34,7 @@ const Navbar = () => {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Home" component={Jobs} />
+      <Tab.Screen name="Sports" component={Jobs} />
       <Tab.Screen
         name="Rooms"
         component={Room}
@@ -44,8 +44,8 @@ const Navbar = () => {
       {/*<Tab.Screen name="Sports" component={sports} />*/}
       <Tab.Screen
         name="Profile"
-        component={MyProfile}
-        options={{ headerTitle: "My Profile" }}
+        component={MyProperty}
+        options={{ headerTitle: "My Property" }}
       />
     </Tab.Navigator>
   );

@@ -3,21 +3,22 @@ import {
     View,
     Text,
     TextInput,
-    StyleSheet,
     ScrollView,
     Button,
     ActivityIndicator,
     TouchableOpacity,
     Modal
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from 'axios';
 import { AuthContext } from "../../auth/AuthContext";
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useRoute} from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/Ionicons';
+import {useNavigation, useRoute} from "@react-navigation/native";
+import ModalSelector from "react-native-modal-selector";
+import {styles} from "./profileDetails.style";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-const EditMarkerDetails = ({ onClose }) => {
+const EditProfileDetails = () => {
     const [room, setRoom] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -28,8 +29,30 @@ const EditMarkerDetails = ({ onClose }) => {
     const { user } = useContext(AuthContext);
     const [modalVisible, setModalVisible] = useState(false);
     const route = useRoute();
+    const navigation = useNavigation();
 
-    const { propertyId, type } = route.params;
+    const { propertyId, type, onClose } = route.params;
+
+    const genderOptions = [
+        { key: 'male', label: 'Male' },
+        { key: 'female', label: 'Female' },
+        { key: 'all', label: 'Any Gender' },
+    ]
+
+    const includingOptions = [
+        { key: 'true', label: 'Yes' },
+        { key: 'false', label: 'No' },
+    ];
+
+    const roomTypeOptions = [
+        { key: 'Single', label: 'Single' },
+        { key: 'Double', label: 'Double' },
+    ];
+
+    const furnishedOptions = [
+        { key: 'true', label: 'Yes' },
+        { key: 'false', label: 'No' },
+    ];
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
@@ -125,16 +148,12 @@ const EditMarkerDetails = ({ onClose }) => {
             }
 
             // Close the modal and return to the previous screen
-            onClose();
+           navigation.goBack();
         } catch (error) {
             console.error('Error saving room details:', error);
         } finally {
             setSaving(false);
         }
-    };
-
-    const handleBack = () => {
-        onClose();
     };
 
     if (loading) {
@@ -158,6 +177,9 @@ const EditMarkerDetails = ({ onClose }) => {
         setModalVisible(false);
     };
 
+
+    console.log("room details ", room);
+
     return (
         <View style={styles.container}>
             <ScrollView>
@@ -170,15 +192,16 @@ const EditMarkerDetails = ({ onClose }) => {
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Available for *</Text>
                     <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={room.gender}
-                            style={styles.picker}
-                            onValueChange={(value) => handleTextChange(value, 'gender')}
-                        >
-                            <Picker.Item label="Male" value="male" />
-                            <Picker.Item label="Female" value="female" />
-                            <Picker.Item label="Any Gender" value="all" />
-                        </Picker>
+                        <ModalSelector data={genderOptions}
+                                       onChange={(option) => handleTextChange(option.key, 'gender')}
+                                       >
+                            <View style={styles.dropdown}>
+                                <Text style={styles.inputText}>
+                                    {genderOptions.find(g => g.key === room.gender)?.label || 'Select Gender'}
+                                </Text>
+                                <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                            </View>
+                        </ModalSelector>
                     </View>
                 </View>
 
@@ -197,14 +220,17 @@ const EditMarkerDetails = ({ onClose }) => {
                     <View style={styles.inputContainer1}>
                         <Text style={styles.label}>Including *</Text>
                         <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={room.including}
-                                style={styles.picker}
-                                onValueChange={(value) => handleTextChange(value, 'including')}
+                            <ModalSelector
+                                data={includingOptions}
+                                onChange={(option) => handleTextChange(option.key, 'including')}
                             >
-                                <Picker.Item label="Yes" value="1" />
-                                <Picker.Item label="No" value="0" />
-                            </Picker>
+                                <View style={styles.dropdown}>
+                                    <Text style={styles.inputText}>
+                                        {includingOptions.find(i => i.key === room.including.toString())?.label || 'Select Option'}
+                                    </Text>
+                                    <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                                </View>
+                            </ModalSelector>
                         </View>
                     </View>
                 </View>
@@ -215,28 +241,34 @@ const EditMarkerDetails = ({ onClose }) => {
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Room Type *</Text>
                         <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={room.roomType}
-                                style={styles.picker}
-                                onValueChange={(value) => handleTextChange(value, 'roomType')}
+                            <ModalSelector
+                                data={roomTypeOptions}
+                                onChange={(option) => handleTextChange(option.key, 'roomType')}
                             >
-                                <Picker.Item label="Single" value="Single" />
-                                <Picker.Item label="Double" value="Double" />
-                            </Picker>
+                                <View style={styles.dropdown}>
+                                    <Text style={styles.inputText}>
+                                        {roomTypeOptions.find(rt => rt.key === room.roomtype)?.label || 'Select Room Type'}
+                                    </Text>
+                                    <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                                </View>
+                            </ModalSelector>
                         </View>
                     </View>
 
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Furnished *</Text>
                         <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={room.furnished}
-                                style={styles.picker}
-                                onValueChange={(value) => handleTextChange(value, 'furnished')}
+                            <ModalSelector
+                                data={furnishedOptions}
+                                onChange={(option) => handleTextChange(option.key, 'furnished')}
                             >
-                                <Picker.Item label="Yes" value="1" />
-                                <Picker.Item label="No" value="0" />
-                            </Picker>
+                                <View style={styles.dropdown}>
+                                    <Text style={styles.inputText}>
+                                        {furnishedOptions.find(f => f.key === room.furnished.toString())?.label || 'Select Furnished'}
+                                    </Text>
+                                    <Icon name="chevron-down" size={20} color="#000" style={styles.dropdownIcon} />
+                                </View>
+                            </ModalSelector>
                         </View>
                     </View>
                 </View>
@@ -294,6 +326,33 @@ const EditMarkerDetails = ({ onClose }) => {
                 </View>
 
                 <View style={styles.rowContainer}>
+                    <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
+                        <TouchableOpacity
+                            style={[styles.input, styles.datePickerInput]}
+                            onPress={() => showDatePicker()}
+                        >
+                            <Text>{room.startdate ? formatDate(room.startdate) : 'Select Date'}</Text>
+                        </TouchableOpacity>
+                        {isDatePickerVisible && <DateTimePicker
+                            mode="date"
+                            onChange={(startDate) => handleTextChange(startDate.toISOString(), 'startdate')}
+                            onCancel={() => setDatePickerVisibility(false)}
+                            minimumDate={new Date()}
+                            maximumDate={new Date(Date.now() + 60 *24 *60 *60 *1000)}
+                            value={room.startDate || new Date()}/>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Available to *</Text>
+                        <TouchableOpacity
+                            style={[styles.input, styles.datePickerInput]}
+                            disabled={true}
+                        >
+                            <Text>{room.endDate ? room.endDate.toLocaleDateString() : 'Auto-filled'}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View style={styles.rowContainer}>
                     <View style={styles.inputContainer}><Text style={styles.label}>Phone1 *</Text>
                         <TextInput
                             style={styles.input}
@@ -332,74 +391,4 @@ const EditMarkerDetails = ({ onClose }) => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    backButton: {
-        padding: 10,
-        position: 'absolute',
-        top: 20,
-        left: 10,
-        zIndex: 1,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    inputContainer: {
-        marginVertical: 10,
-        flex: 1,
-    },
-    inputContainer1: {
-        marginVertical: 10,
-        flex: 1,
-    },
-    input: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        padding: 10,
-        fontSize: 16,
-    },
-    inputError: {
-        borderBottomColor: 'red',
-    },
-    pickerContainer: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
-    picker: {
-        height: 50,
-        width: '100%',
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    info: {
-        fontSize: 16,
-        marginVertical: 10,
-    },
-    rowContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    datePickerButton: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        padding: 10,
-    },
-    datePickerText: {
-        fontSize: 16,
-    },
-});
-
-export default EditMarkerDetails;
+export default EditProfileDetails;
