@@ -29,8 +29,8 @@ function AppNavigator() {
                     <Stack.Screen name="DetailsPage" component={DetailsPage} />
                     <Stack.Screen name="MyProperty" component={MyProperty} />
                     <Stack.Screen name="MarkerDetailsPage" component={MarkerDetailsPage} options={{title:'Property Details'}}/>
-                    <Stack.Screen name="EditRoomPropertyDetails" component={EditRoomPropertyDetails} options={{title:'Edit Room Details'}}/>
-                    <Stack.Screen name="EditUnitPropertyDetails" component={EditUnitPropertyDetails} options={{title:'Edit Unit Details'}}/>
+                    <Stack.Screen name="EditRoomPropertyDetails" component={EditRoomPropertyDetails} options={{title:'Edit Room Details', presentation: 'modal'}}/>
+                    <Stack.Screen name="EditUnitPropertyDetails" component={EditUnitPropertyDetails} options={{title:'Edit Unit Details', presentation: 'modal'}}/>
                     <Stack.Screen name="Login" component={LoginScreen} />
                 </>
             ) : (

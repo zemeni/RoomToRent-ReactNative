@@ -1,21 +1,24 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, Button} from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Button, RefreshControl } from 'react-native';
 import axios from 'axios';
-import {useNavigation} from "@react-navigation/native";
-import {AuthContext} from "../../auth/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../../auth/AuthContext";
+import { Ionicons } from '@expo/vector-icons';
 
 const MyProperty = () => {
+    console.log("My property page is mounted");
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const {user, logout} = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
     const navigation = useNavigation();
 
     const fetchUserProperties = async () => {
         try {
             console.log("user details in profile page", user);
             setLoading(true);
-            const {email} = user.userProfile;
+            const { email } = user.userProfile;
             const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/${email}`, {
                 params: {
                     type: 'room'
@@ -27,44 +30,31 @@ const MyProperty = () => {
             console.error('Error fetching user properties:', error);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
 
+    console.log("I am inside my property page");
+
     useEffect(() => {
+        console.log("component mounted, fetching properties");
         fetchUserProperties();
     }, []);
 
-    const deleteProperty = async (id, type) => {
-        console.log("Deleting property of type ", type);
-        try {
-            const response = await fetch(`http://192.168.1.108:4000/api/property/${id}?type=${encodeURIComponent(type)}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': 'Bearer ' + user.token,  // Ensure user is authenticated
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            fetchUserProperties();
-        } catch (error) {
-            console.error('Error deleting property:', error);
-        }
+    const handleRefresh = () => {
+        setRefreshing(true);
+        fetchUserProperties();
     };
+
 
     const handlePropertyPress = (item) => {
         console.log("item type ", item.type);
-
-        const deletePropertyHandler = () => deleteProperty(item.id, item.type);
 
         switch (item.type) {
             case 'room':
                 navigation.navigate('EditRoomPropertyDetails', {
                     propertyId: item.id,
                     type: item.type,
-                    deleteProperty: deletePropertyHandler,
-                    // onClose: () => navigation.goBack() // Pass the onClose function if needed
                 });
                 break;
 
@@ -72,8 +62,6 @@ const MyProperty = () => {
                 navigation.navigate('EditUnitPropertyDetails', {
                     propertyId: item.id,
                     type: item.type,
-                    deleteProperty: deletePropertyHandler,
-                    // onClose: () => navigation.goBack() // Pass the onClose function if needed
                 });
                 break;
 
@@ -82,8 +70,7 @@ const MyProperty = () => {
         }
     };
 
-
-    const renderPropertyItem = ({item}) => (
+    const renderPropertyItem = ({ item }) => (
         <TouchableOpacity
             style={styles.propertySnippet}
             onPress={() => handlePropertyPress(item)}
@@ -104,31 +91,51 @@ const MyProperty = () => {
 
     if (!properties.length) {
         return (
-            <View style={styles.errorContainer}>
-                <Text>No properties found.</Text>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
+                        <Text style={styles.refreshButtonText}>Refresh</Text>
+                        <Ionicons name="refresh" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.errorContainer}>
+                    <Text>No properties found.</Text>
+                </View>
+                <View style={styles.footerContainer}>
+                    <Button
+                        title="Logout"
+                        onPress={logout}
+                    />
+                </View>
             </View>
         );
     }
 
-    const handleLogout = async () => {
-        await logout();
-        navigation.navigate('Login');
-    }
-
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
+                    <Text style={styles.refreshButtonText}>Refresh</Text>
+                    <Ionicons name="refresh" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
             <FlatList
                 data={properties}
                 renderItem={renderPropertyItem}
                 keyExtractor={(item) => item.id.toString()}
-                ListFooterComponent={() => (
-                    <View style={styles.footerContainer}>
-                        <Button
-                        title="Logout"
-                        onPress={handleLogout}
-                    /></View>
-                )}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
+                    />
+                }
             />
+            <View style={styles.footerContainer}>
+                <Button
+                    title="Logout"
+                    onPress={logout}
+                />
+            </View>
         </View>
     );
 };
@@ -139,9 +146,27 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#ebedf1',
     },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    refreshButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#235e9e',
+        padding: 10,
+        borderRadius: 10,
+    },
+    refreshButtonText: {
+        fontSize: 16,
+        marginRight: 10,
+        color: '#fff'
+    },
     footerContainer: {
-        marginTop: 50, // Adjust the margin as needed
-        paddingHorizontal: 10, // Optional: Add horizontal padding if needed
+        marginTop: 50,
+        paddingHorizontal: 10,
     },
     loadingContainer: {
         flex: 1,

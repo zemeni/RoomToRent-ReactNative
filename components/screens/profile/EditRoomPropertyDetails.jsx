@@ -33,10 +33,10 @@ const EditRoomPropertyDetails = () => {
 
     const {propertyId, type} = route.params;
 
-    const deleteProperty = async (id, type) => {
+    const deleteProperty = async () => {
         console.log("Deleting property of type ", type);
         try {
-            const response = await fetch(`http://192.168.1.108:4000/api/property/${id}?type=${encodeURIComponent(type)}`, {
+            const response = await fetch(`http://192.168.1.108:4000/api/property/${propertyId}?type=${encodeURIComponent(type)}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + user.token,  // Ensure user is authenticated
@@ -51,7 +51,7 @@ const EditRoomPropertyDetails = () => {
         }
     };
 
-    const handleDelete = (id, type) => {
+    const handleDelete = () => {
         Alert.alert(
             'Confirm Deletion',
             'Are you sure you want to delete this property?',
@@ -63,7 +63,7 @@ const EditRoomPropertyDetails = () => {
                 {
                     text: 'Delete',
                     onPress: () => {
-                        deleteProperty(id, type).then(() => {
+                        deleteProperty().then(() => {
                             navigation.goBack();
                         }).catch(error => {
                             console.error('Error deleting property:', error);
@@ -404,7 +404,7 @@ const EditRoomPropertyDetails = () => {
 
                 <Button
                     title="Delete"
-                    onPress={()=>handleDelete(room.id, room.type)}
+                    onPress={handleDelete}
                 />
             </ScrollView>
             <Modal

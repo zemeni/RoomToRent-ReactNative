@@ -10,23 +10,27 @@ import MyProperty from "../screens/profile/MyProperty";
 const Tab = createBottomTabNavigator();
 
 const Navbar = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+    console.log("Navbar component is rendered");
 
-      if (route.name === "Rooms") {
-        iconName = focused ? "home" : "home-outline";
-      } else if (route.name === "Jobs") {
-        iconName = focused ? "briefcase" : "briefcase-outline";
-      } else if (route.name === "MarketPlace") {
-        iconName = focused ? "storefront" : "storefront-outline";
-      } else if (route.name === "Sports") {
-        iconName = focused ? "trophy" : "trophy-outline";
-      } else if (route.name === "Profile") {
-        iconName = focused ? "person" : "person-outline";
-      }
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+
+                    console.log("route name is ", route.name);
+
+                    if (route.name === "Rooms") {
+                        iconName = focused ? "home" : "home-outline";
+                    } else if (route.name === "Jobs") {
+                        iconName = focused ? "briefcase" : "briefcase-outline";
+                    } else if (route.name === "MarketPlace") {
+                        iconName = focused ? "storefront" : "storefront-outline";
+                    } else if (route.name === "Sports") {
+                        iconName = focused ? "trophy" : "trophy-outline";
+                    } else if (route.name === "Profile") {
+                        iconName = focused ? "person" : "person-outline";
+                    }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -45,7 +49,7 @@ const Navbar = () => {
       <Tab.Screen
         name="Profile"
         component={MyProperty}
-        options={{ headerTitle: "My Property" }}
+        options={{ headerTitle: "My Properties" }}
       />
     </Tab.Navigator>
   );
