@@ -7,47 +7,81 @@ import {AuthContext} from "../../auth/AuthContext";
 const MyProperty = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedProperty, setSelectedProperty] = useState(null);
 
     const {user, logout} = useContext(AuthContext);
     const navigation = useNavigation();
 
-    useEffect(() => {
-        const fetchUserProperties = async () => {
-            try {
-                console.log("user details in profile page", user);
-                const {email} = user.userProfile;
-                const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/${email}`, {
-                    params: {
-                        type: 'room'
-                    }
-                });
-                console.log("response in MyProperty is ", response.data);
-                setProperties(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching user properties:', error);
-                setLoading(false);
-            }
-        };
+    const fetchUserProperties = async () => {
+        try {
+            console.log("user details in profile page", user);
+            setLoading(true);
+            const {email} = user.userProfile;
+            const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/${email}`, {
+                params: {
+                    type: 'room'
+                }
+            });
+            console.log("response in MyProperty is ", response.data);
+            setProperties(response.data);
+        } catch (error) {
+            console.error('Error fetching user properties:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchUserProperties();
     }, []);
 
-    const handleModalClose = () => {
-        console.log("inside handle modal close");
-        setIsModalVisible(false);
-        setSelectedProperty(null);
+    const deleteProperty = async (id, type) => {
+        console.log("Deleting property of type ", type);
+        try {
+            const response = await fetch(`http://192.168.1.108:4000/api/property/${id}?type=${encodeURIComponent(type)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + user.token,  // Ensure user is authenticated
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            fetchUserProperties();
+        } catch (error) {
+            console.error('Error deleting property:', error);
+        }
     };
 
     const handlePropertyPress = (item) => {
-        navigation.navigate('EditProfileDetails', {
-            propertyId: item.id,
-            type: item.type,
-            onClose: () => navigation.goBack() // Pass the onClose function
-        });
+        console.log("item type ", item.type);
+
+        const deletePropertyHandler = () => deleteProperty(item.id, item.type);
+
+        switch (item.type) {
+            case 'room':
+                navigation.navigate('EditRoomPropertyDetails', {
+                    propertyId: item.id,
+                    type: item.type,
+                    deleteProperty: deletePropertyHandler,
+                    // onClose: () => navigation.goBack() // Pass the onClose function if needed
+                });
+                break;
+
+            case 'unit':
+                navigation.navigate('EditUnitPropertyDetails', {
+                    propertyId: item.id,
+                    type: item.type,
+                    deleteProperty: deletePropertyHandler,
+                    // onClose: () => navigation.goBack() // Pass the onClose function if needed
+                });
+                break;
+
+            default:
+                throw new Error('Property type not found');
+        }
     };
+
 
     const renderPropertyItem = ({item}) => (
         <TouchableOpacity

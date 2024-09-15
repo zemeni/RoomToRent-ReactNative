@@ -13,7 +13,7 @@ const MarkerDetailsPage = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
 
-    console.log("room id in Marker Details Page is", propertyId);
+    console.log("room id in Marker Details Page is", propertyId, type);
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
@@ -82,17 +82,21 @@ const MarkerDetailsPage = () => {
                         <Text style={styles.label}>Weekly Price:</Text>
                         <Text style={styles.info}>${room.price}</Text>
                     </View>
-                    <View style={styles.flexColumn}>
-                        <Text style={styles.label}>Including:</Text>
-                        <Text style={styles.info}>{room.including ? 'Yes' : 'No'}</Text>
-                    </View>
+                    {room.type === 'room' && <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Room Type:</Text>
+                        <Text style={styles.info}>{room.roomtype}</Text>
+                    </View>}
+                    {type === 'unit' && <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Bond Price:</Text>
+                        <Text style={styles.info}>{room.bondprice}</Text>
+                    </View>}
                 </View>
 
                 {/* Room Type and Furnished */}
                 <View style={styles.flexRow}>
                     <View style={styles.flexColumn}>
-                        <Text style={styles.label}>Room Type:</Text>
-                        <Text style={styles.info}>{room.roomtype}</Text>
+                        <Text style={styles.label}>Including:</Text>
+                        <Text style={styles.info}>{room.including ? 'Yes' : 'No'}</Text>
                     </View>
                     <View style={styles.flexColumn}>
                         <Text style={styles.label}>Furnished:</Text>
@@ -119,7 +123,7 @@ const MarkerDetailsPage = () => {
                         <Text style={styles.info}>{new Date(room.startdate).toLocaleDateString()}</Text>
                     </View>
                     <View style={styles.flexColumn}>
-                        <Text style={styles.label}>Available To:</Text>
+                        <Text style={styles.label}>Post Expiry Date:</Text>
                         <Text style={styles.info}>{new Date(room.enddate).toLocaleDateString()}</Text>
                     </View>
                 </View>

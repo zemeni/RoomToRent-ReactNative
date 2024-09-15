@@ -12,8 +12,9 @@ import { useContext, useEffect } from "react";
 import DetailsPage from "./components/screens/rooms/listView/detailsPage";
 import Toast from 'react-native-toast-message';
 import MarkerDetailsPage from "./components/screens/rooms/mapView/markerDetailsPage";
-import EditProfileDetails from "./components/screens/profile/EditProfileDetails";
+import EditRoomPropertyDetails from "./components/screens/profile/EditRoomPropertyDetails";
 import MyProperty from "./components/screens/profile/MyProperty";
+import EditUnitPropertyDetails from "./components/screens/profile/EditUnitPropertyDetails";
 
 const Stack = createStackNavigator();
 
@@ -28,7 +29,8 @@ function AppNavigator() {
                     <Stack.Screen name="DetailsPage" component={DetailsPage} />
                     <Stack.Screen name="MyProperty" component={MyProperty} />
                     <Stack.Screen name="MarkerDetailsPage" component={MarkerDetailsPage} options={{title:'Property Details'}}/>
-                    <Stack.Screen name="EditProfileDetails" component={EditProfileDetails} options={{title:'Edit Property Details'}}/>
+                    <Stack.Screen name="EditRoomPropertyDetails" component={EditRoomPropertyDetails} options={{title:'Edit Room Details'}}/>
+                    <Stack.Screen name="EditUnitPropertyDetails" component={EditUnitPropertyDetails} options={{title:'Edit Unit Details'}}/>
                     <Stack.Screen name="Login" component={LoginScreen} />
                 </>
             ) : (

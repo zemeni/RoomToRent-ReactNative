@@ -368,7 +368,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                         <Text style={styles.errorText}>Select Available </Text>}
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Available to *</Text>
+                    <Text style={styles.label}>This post expires on *</Text>
                     <TouchableOpacity
                         style={[styles.input, styles.datePickerInput]}
                         disabled={true}
