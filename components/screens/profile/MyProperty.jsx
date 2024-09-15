@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Button, RefreshControl } from 'react-native';
+import React, {useState, useContext, useCallback} from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Button } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import { AuthContext } from "../../auth/AuthContext";
-import { Ionicons } from '@expo/vector-icons';
 
 const MyProperty = () => {
-    console.log("My property page is mounted");
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
 
     const { user, logout } = useContext(AuthContext);
     const navigation = useNavigation();
 
     const fetchUserProperties = async () => {
         try {
-            console.log("user details in profile page", user);
             setLoading(true);
             const { email } = user.userProfile;
             const response = await axios.get(`http://192.168.1.108:4000/api/propertyByUsername/${email}`, {
@@ -24,32 +20,25 @@ const MyProperty = () => {
                     type: 'room'
                 }
             });
-            console.log("response in MyProperty is ", response.data);
             setProperties(response.data);
         } catch (error) {
-            console.error('Error fetching user properties:', error);
         } finally {
             setLoading(false);
-            setRefreshing(false);
         }
     };
 
-    console.log("I am inside my property page");
+    useFocusEffect(
+        useCallback(() => {
+            fetchUserProperties();
+        }, [])
+    );
 
-    useEffect(() => {
-        console.log("component mounted, fetching properties");
-        fetchUserProperties();
-    }, []);
-
-    const handleRefresh = () => {
-        setRefreshing(true);
-        fetchUserProperties();
-    };
+    const handleLogout = () => {
+        logout();
+    }
 
 
     const handlePropertyPress = (item) => {
-        console.log("item type ", item.type);
-
         switch (item.type) {
             case 'room':
                 navigation.navigate('EditRoomPropertyDetails', {
@@ -89,51 +78,17 @@ const MyProperty = () => {
         );
     }
 
-    if (!properties.length) {
-        return (
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
-                        <Text style={styles.refreshButtonText}>Refresh</Text>
-                        <Ionicons name="refresh" size={24} color="black" />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.errorContainer}>
-                    <Text>No properties found.</Text>
-                </View>
-                <View style={styles.footerContainer}>
-                    <Button
-                        title="Logout"
-                        onPress={logout}
-                    />
-                </View>
-            </View>
-        );
-    }
-
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
-                    <Text style={styles.refreshButtonText}>Refresh</Text>
-                    <Ionicons name="refresh" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
             <FlatList
                 data={properties}
                 renderItem={renderPropertyItem}
                 keyExtractor={(item) => item.id.toString()}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={handleRefresh}
-                    />
-                }
             />
             <View style={styles.footerContainer}>
                 <Button
                     title="Logout"
-                    onPress={logout}
+                    onPress={handleLogout}
                 />
             </View>
         </View>

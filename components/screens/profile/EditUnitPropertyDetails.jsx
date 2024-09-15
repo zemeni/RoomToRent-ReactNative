@@ -1,27 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    ScrollView,
-    Button,
-    ActivityIndicator,
-    TouchableOpacity,
-    Modal, Alert
-} from 'react-native';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import {View, Text, TextInput, ScrollView, Button, ActivityIndicator, TouchableOpacity, Modal, Alert} from 'react-native';
 import axios from 'axios';
 import { AuthContext } from "../../auth/AuthContext";
-import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation, useRoute} from "@react-navigation/native";
-import ModalSelector from "react-native-modal-selector";
 import {styles} from "./propertyDetails.style";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const EditRoomPropertyDetails = () => {
     const [room, setRoom] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isUpdateDisabled, setIsUpdateDisabled] = useState(true);
     const [errors, setErrors] = useState({});
@@ -31,7 +18,24 @@ const EditRoomPropertyDetails = () => {
     const route = useRoute();
     const navigation = useNavigation();
 
-    const { propertyId, type, deleteProperty } = route.params;
+    const { propertyId, type } = route.params;
+
+    const deleteProperty = async () => {
+        try {
+            const response = await fetch(`http://192.168.1.108:4000/api/property/${propertyId}?type=${encodeURIComponent(type)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + user.token,  // Ensure user is authenticated
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error deleting property:', error);
+        }
+    };
 
     const handleDelete = () => {
         Alert.alert(
@@ -58,7 +62,6 @@ const EditRoomPropertyDetails = () => {
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
-            console.log("fetching unit details ", propertyId, type);
             try {
                 const response = await axios.get(`http://192.168.1.108:4000/api/property/${propertyId}`, {
                     params: { type: type }
@@ -73,7 +76,7 @@ const EditRoomPropertyDetails = () => {
         };
 
         fetchRoomDetails();
-    }, [propertyId, type]);
+    }, [propertyId]);
 
     useEffect(() => {
         const isChanged = JSON.stringify(room) !== JSON.stringify(initialRoom);
@@ -91,7 +94,6 @@ const EditRoomPropertyDetails = () => {
     };
 
     const handleTextChange = (value, field) => {
-        console.log(field, value);
         const updatedRoom = { ...room, [field]: value };
 
         let newErrors = { ...errors };
@@ -135,9 +137,8 @@ const EditRoomPropertyDetails = () => {
     };
 
     const updateProperty = async () => {
-        console.log("updating property ", room);
-        setSaving(true);
         try {
+            setLoading(true);
             const response = await fetch(`http://192.168.1.108:4000/api/property/${propertyId}`, {
                 method: 'PUT',
                 headers: {
@@ -154,12 +155,11 @@ const EditRoomPropertyDetails = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            // Close the modal and return to the previous screen
             navigation.goBack();
         } catch (error) {
             console.error('Error saving room details:', error);
         } finally {
-            setSaving(false);
+            setLoading(false);
         }
     };
 
@@ -184,9 +184,6 @@ const EditRoomPropertyDetails = () => {
     const handleCloseModal = () => {
         setModalVisible(false);
     };
-
-
-    console.log("room details ", room);
 
     return (
         <View style={styles.container}>
@@ -263,28 +260,6 @@ const EditRoomPropertyDetails = () => {
                 />
                 {errors.parkings && <Text style={styles.errorText}>{errors.parkings}</Text>}
 
-                {/*                <View style={styles.rowContainer}>
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Available from *</Text>
-                        <TouchableOpacity onPress={showDatePicker} style={styles.datePickerButton}>
-                            <Text style={styles.datePickerText}>
-                                {room.startdate ? formatDate(room.startdate) : 'Select Date'}
-                            </Text>
-                        </TouchableOpacity>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerVisible}
-                            mode="date"
-                            onConfirm={(date) => handleTextChange(date.toISOString(), 'startdate')}
-                            onCancel={() => setDatePickerVisibility(false)}
-                        />
-                    </View>
-
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Post Expiry Date *</Text>
-                        <Text style={styles.info}>{room.enddate ? formatDate(room.enddate) : 'N/A'}</Text>
-                    </View>
-                </View>*/}
-
                 <View style={styles.rowContainer}>
                     <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
                         <TouchableOpacity
@@ -330,17 +305,20 @@ const EditRoomPropertyDetails = () => {
                 </View>
                 {errors.phone1 && <Text style={styles.errorText}>{errors.phone1}</Text>}
 
-                <Button
-                    title="Update"
+                <TouchableOpacity
+                    style={[styles.button, isUpdateDisabled ? styles.disabledButton : styles.updateButton]}
                     onPress={updateProperty}
                     disabled={isUpdateDisabled}
-                />
+                >
+                    <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity>
 
-
-                <Button
-                    title="Delete"
+                <TouchableOpacity
+                    style={[styles.button, styles.deleteButton]}
                     onPress={handleDelete}
-                />
+                >
+                    <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
             </ScrollView>
             <Modal
                 visible={modalVisible}

@@ -86,4 +86,24 @@ export const styles = StyleSheet.create({
     datePickerText: {
         fontSize: 16,
     },
+    button: {
+        padding: 10,
+        marginVertical: 10,
+        alignItems: 'center',
+        borderRadius: 5,
+    },
+    updateButton: {
+        backgroundColor: 'green',
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+    },
+    disabledButton: {
+        backgroundColor: 'gray',
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 });

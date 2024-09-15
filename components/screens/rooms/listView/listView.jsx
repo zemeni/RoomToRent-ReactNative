@@ -20,6 +20,8 @@ const ListView = ({markers}) => {
                 type: marker.type
             }));
             setRooms(mappedRooms);
+        }else {
+            setRooms([]);
         }
         setLoading(false);
     }, [markers]); // Include markers in the dependency array

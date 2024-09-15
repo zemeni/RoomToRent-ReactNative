@@ -95,8 +95,8 @@ const MarkerDetailsPage = () => {
                 {/* Room Type and Furnished */}
                 <View style={styles.flexRow}>
                     <View style={styles.flexColumn}>
-                        <Text style={styles.label}>Including:</Text>
-                        <Text style={styles.info}>{room.including ? 'Yes' : 'No'}</Text>
+                        <Text style={styles.label}>No of Rooms:</Text>
+                        <Text style={styles.info}>{room.rooms}</Text>
                     </View>
                     <View style={styles.flexColumn}>
                         <Text style={styles.label}>Furnished:</Text>
@@ -108,13 +108,18 @@ const MarkerDetailsPage = () => {
                 <Text style={styles.label}>Description:</Text>
                 <Text style={styles.info}>{room.description}</Text>
 
-                {/* Number of Bathrooms */}
-                <Text style={styles.label}>Number of Bathrooms:</Text>
-                <Text style={styles.info}>{room.bathrooms}</Text>
 
-                {/* Number of Parkings */}
-                <Text style={styles.label}>Number of Parkings:</Text>
-                <Text style={styles.info}>{room.parkings}</Text>
+                {/* Room Type and Furnished */}
+                <View style={styles.flexRow}>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Bathrooms:</Text>
+                        <Text style={styles.info}>{room.bathrooms}</Text>
+                    </View>
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.label}>Parkings:</Text>
+                        <Text style={styles.info}>{room.parkings}</Text>
+                    </View>
+                </View>
 
                 {/* Available from and Available to */}
                 <View style={styles.flexRow}>
