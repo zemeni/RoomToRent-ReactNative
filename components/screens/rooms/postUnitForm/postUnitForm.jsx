@@ -196,7 +196,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 placeholder="Enter Unit Address"
                 onPress={(data) => handleAddressSelect(unit.id, data)}
                 query={{
-                    key: 'AIzaSyCUD4zx3oDyTCAISXtANyF-j8s2ayPHfSs', // Your Google API Key
+                    key: '', // Your Google API Key
                     language: 'en',
                     components: { country: 'au' }
                 }}

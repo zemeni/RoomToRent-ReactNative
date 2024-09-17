@@ -17,7 +17,6 @@ const TopTab = createMaterialTopTabNavigator();
 const Room = () => {
     const { user } = useContext(AuthContext);
 
-/*
     // If user is null, the page should not continue rendering
     if (!user || !user.userProfile) {
         return (
@@ -27,7 +26,6 @@ const Room = () => {
         );
     }
 
-*/
 
     const userCountryKey = user.userProfile.country;
     const userStateKey = user.userProfile.state;
@@ -80,13 +78,12 @@ const Room = () => {
     useFocusEffect(
         useCallback(() => {
             fetchRoomData(state);
-        }, [])
+        }, [state])
     );
 
     useEffect(() => {
-        fetchRoomData(state);
         getUserLocation();
-    }, [state, fetchRoomData, getUserLocation]);
+    }, []);
 
     const handleStateChange = useCallback((itemValue) => {
         const selectedState = country.states.find(s => s.key === itemValue);
@@ -96,6 +93,8 @@ const Room = () => {
             longitude: selectedState.longitude
         });
     }, [country.states]);
+
+    console.log("rendering room page and markers size is ", markers.length);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -109,12 +108,15 @@ const Room = () => {
                 </ModalSelector>
             </View>
 
-            <TopTab.Navigator>
+            <TopTab.Navigator
+            screenOptions={{unmountOnBlur: false, lazy: true
+            }}
+            >
                 <TopTab.Screen name="Map" >
-                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation} fetchRoomData={() => fetchRoomData(state)} />}
+                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation} />}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
-                    {props => <ListView {...props} markers={markers} fetchRoomData={() => fetchRoomData(state)} />}
+                    {props => <ListView {...props} markers={markers} />}
                 </TopTab.Screen>
             </TopTab.Navigator>
         </SafeAreaView>

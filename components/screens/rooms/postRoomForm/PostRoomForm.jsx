@@ -444,7 +444,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                                 handleTextChange(data.description, null, 'address');
                             }}
                             query={{
-                                key: 'AIzaSyCUD4zx3oDyTCAISXtANyF-j8s2ayPHfSs',
+                                key: '',
                                 language: 'en',
                                 components: {country: 'au'}
                             }}

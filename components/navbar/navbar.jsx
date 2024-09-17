@@ -10,15 +10,12 @@ import MyProperty from "../screens/profile/MyProperty";
 const Tab = createBottomTabNavigator();
 
 const Navbar = () => {
-    console.log("Navbar component is rendered");
 
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
-
-                    console.log("route name is ", route.name);
 
                     if (route.name === "Rooms") {
                         iconName = focused ? "home" : "home-outline";

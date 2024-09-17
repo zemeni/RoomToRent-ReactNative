@@ -16,14 +16,8 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
     const [isFormVisible, setIsFormVisible] = useState(false);
     const mapRef = useRef(null);
 
-    const [markerPosition, setMarkerPosition] = useState(null);
-    const [radius, setRadius] = useState(1000);
-
     const {user} = useContext(AuthContext);
     const navigation = useNavigation();
-
-    console.log("inside map view tab");
-    console.log("updated user location in map view is ", mapLocation);
 
     useEffect(() => {
         if (mapRef.current && mapLocation) {
@@ -110,27 +104,6 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
         setIsFormVisible(false);
     };
 
-    const handleMapPress = (event) => {
-        console.log("map is pressed");
-        const {latitude, longitude} = event.nativeEvent.coordinate;
-        setMarkerPosition({latitude, longitude});
-    };
-
-    const handleMarkerDragEnd = (event) => {
-        const {latitude, longitude} = event.nativeEvent.coordinate;
-        setMarkerPosition({latitude, longitude});
-    };
-
-    const handleSearch = async () => {
-        const searchParams = {
-            latitude: markerPosition.latitude,
-            longitude: markerPosition.longitude,
-            radius: radius,
-        };
-
-        console.log("search params is ", searchParams);
-    };
-
     const handleMarkerPress = (marker) => {
         console.log("passing this marker to MarkerDetailsPage::", marker);
         navigation.navigate('MarkerDetailsPage', {propertyId: marker.id, type:marker.type})
@@ -153,24 +126,7 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
                 showsUserLocation={true}
                 showsMyLocationButton={false}
                 mapType={mapType === 'standard' ? 'standard' : mapType === 'satellite' ? 'satellite' : 'hybrid'}
-                // onPress={handleMapPress}
             >
-                {/* DON'T REMOVE {markerPosition && (
-                    <>
-                        <Marker
-                            coordinate={markerPosition}
-                            draggable
-                            onDragEnd={handleMarkerDragEnd}
-                        />
-                        <Circle
-                            center={markerPosition}
-                            radius={radius}
-                            strokeWidth={2}
-                            strokeColor={'#1a66ff'}
-                            fillColor={'rgba(230,238,255,0.5)'}
-                        />
-                    </>
-                )}*/}
                 {markers.map(marker => (
                     <Marker
                         key={marker.id}
@@ -203,23 +159,6 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
             <Modal visible={isFormVisible} animationType="slide">
                 <PostForm onSubmit={handleFormSubmit} onCancel={handleFormCancel}/>
             </Modal>
-            {/* DON'T REMOVE {markerPosition && (
-                <View style={styles.sliderContainer}>
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={1000}
-                        maximumValue={5000}
-                        value={radius}
-                        onValueChange={value => setRadius(value)}
-                        minimumTrackTintColor="#1a66ff"
-                        maximumTrackTintColor="#fff"
-                        thumbTintColor="#1a66ff"
-                    />
-                    <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-                        <Text style={styles.searchButtonText}>Search</Text>
-                    </TouchableOpacity>
-                </View>
-            )}*/}
         </View>
     );
 };

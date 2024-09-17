@@ -7,7 +7,7 @@ const ListView = ({markers}) => {
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
-    console.log("markers in list view ", markers);
+    console.log("markers in list view ", markers.length);
 
     useEffect(() => {
         if (markers.length > 0) {
@@ -24,7 +24,7 @@ const ListView = ({markers}) => {
             setRooms([]);
         }
         setLoading(false);
-    }, [markers]); // Include markers in the dependency array
+    }, []); // Include markers in the dependency array
 
 
     const handlePress = (item) => {
