@@ -53,7 +53,9 @@ const Room = () => {
                     longitude: room.longitude
                 },
                 price: room.price,
-                type: room.type
+                type: room.type,
+                address: room.address,
+                description: room.description
             }));
             setMarkers(fetchedMarkers);
         } catch (error) {
@@ -113,7 +115,7 @@ const Room = () => {
             }}
             >
                 <TopTab.Screen name="Map" >
-                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation} />}
+                    {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation}  fetchRoomData={() => fetchRoomData(state)}/>}
                 </TopTab.Screen>
                 <TopTab.Screen name="List">
                     {props => <ListView {...props} markers={markers} />}

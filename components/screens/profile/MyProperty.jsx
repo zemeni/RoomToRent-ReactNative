@@ -86,6 +86,7 @@ const MyProperty = () => {
                 keyExtractor={(item) => item.id.toString()}
             />
             <View style={styles.footerContainer}>
+                <Text>{user.userProfile.firstname} {user.userProfile.lastname}</Text>
                 <Button
                     title="Logout"
                     onPress={handleLogout}

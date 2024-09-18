@@ -11,12 +11,11 @@ const ListView = ({markers}) => {
 
     useEffect(() => {
         if (markers.length > 0) {
-            // Map markers to match the expected format
             const mappedRooms = markers.map(marker => ({
                 id: marker.id,
                 price: marker.price,
-                latitude: marker.coordinate.latitude,
-                longitude: marker.coordinate.longitude,
+                address: marker.address,
+                description: marker.description,
                 type: marker.type
             }));
             setRooms(mappedRooms);
@@ -24,7 +23,7 @@ const ListView = ({markers}) => {
             setRooms([]);
         }
         setLoading(false);
-    }, []); // Include markers in the dependency array
+    }, []);
 
 
     const handlePress = (item) => {
@@ -34,10 +33,9 @@ const ListView = ({markers}) => {
     const renderItem = ({item, index}) => (
         <TouchableOpacity onPress={() => handlePress(item)} style={styles.itemContainer}>
             <View style={styles.itemDetails}>
-                <Text style={styles.itemText}>ID: {item.id}</Text>
-                <Text style={styles.itemText}>Price: ${item.price}</Text>
-                <Text style={styles.itemText}>Latitude: {item.latitude}</Text>
-                <Text style={styles.itemText}>Longitude: {item.longitude}</Text>
+                <Text style={[styles.itemText, { fontWeight: 'bold' }]}>Price: ${item.price}</Text>
+                <Text style={styles.itemText}>Address: {item.address}</Text>
+                <Text style={[styles.itemText, { fontWeight: 'bold' }]}>{item.type}</Text>
             </View>
             <Text style={styles.indexText}>{index + 1}</Text>
         </TouchableOpacity>
@@ -66,9 +64,9 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     itemContainer: {
-        flexDirection: 'row', // Arrange item details and index in a row
-        justifyContent: 'space-between', // Ensure details and index are on opposite sides
-        alignItems: 'center', // Center content vertically
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
@@ -76,7 +74,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9f9f9',
     },
     itemDetails: {
-        flex: 1, // Take up most of the space on the left
+        flex: 1,
     },
     itemText: {
         fontSize: 16,

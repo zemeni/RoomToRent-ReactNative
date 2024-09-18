@@ -30,37 +30,33 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
         parkings: 0,
         startDate: '',
         phone1: '',
-        phone2: '',
-        images: []
+        phone2: ''
     }]);
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [validationErrors, setValidationErrors] = useState({});
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const MAX_IMAGES = 5;
 
     const validateField = useCallback((field, value) => {
         switch (field) {
             case 'address':
                 return value !== '';
             case 'price':
-                return value > 0;
+                return value > 0 && value < 1500;
             case 'bondPrice':
-                return value > 0;
+                return value > 0 && value < 5000;
             case 'rooms':
                 return value > 0;
             case 'startDate':
                 return value instanceof Date && !isNaN(value.getTime());
             case 'description':
-                return value.length > 50;
+                return value.length > 30 && value.length < 200;
             case 'bathrooms':
-                return value > 0;
+                return value > 0 && value < 5;
             case 'parkings':
-                return value >= 0;
+                return value >= 0 && value <5;
             case 'phone1':
                 const phoneRegex = /^04\d{8}$/;
                 return phoneRegex.test(value);
-            case 'images':
-                return value.length <= MAX_IMAGES;
             default:
                 return true;
         }
@@ -71,7 +67,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
 
         const isFormValid = units.length > 0 && units.every(unit => {
             let isUnitValid = true;
-            ['address', 'price', 'rooms', 'startDate', 'bathrooms', 'description', 'parkings', 'images', 'phone1'].forEach(field => {
+            ['address', 'price', 'rooms', 'startDate', 'bathrooms', 'description', 'parkings', 'phone1'].forEach(field => {
                 if (!validateField(field, unit[field])) {
                     isUnitValid = false;
                     errors[unit.id] = errors[unit.id] || {};
@@ -113,39 +109,11 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
         setUnits(updatedUnits);
     };
 
-    const pickImage = async (unitId) => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            const newImages = result.assets.map(asset => asset.uri);
-            const updatedUnits = units.map(unit => {
-                if (unit.id === unitId) {
-                    const limitedImages = [...unit.images, ...newImages].slice(0, MAX_IMAGES);
-                    return { ...unit, images: limitedImages };
-                }
-                return unit;
-            });
-            setUnits(updatedUnits);
-        }
-    };
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
     };
 
-    const removeImage = (unitId, uri) => {
-        const updatedUnits = units.map(unit => {
-            if (unit.id === unitId) {
-                return { ...unit, images: unit.images.filter(image => image !== uri) };
-            }
-            return unit;
-        });
-        setUnits(updatedUnits);
-    };
 
     const addUnit = () => {
         const newUnitId = units.length + 1;
@@ -161,8 +129,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
             parkings: 0,
             startDate:'',
             phone1:'',
-            phone2:'',
-            images: []
+            phone2:''
         };
         setUnits([...units, newUnit]);
     };
@@ -236,7 +203,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 </View>
             </View>
             {validationErrors[unit.id]?.price &&
-                <Text style={styles.errorText}>Price must be greater than 0.</Text>}
+                <Text style={styles.errorText}>Invalid Price.</Text>}
 
             <Text style={styles.label}>Number of Rooms *</Text>
             <TextInput
@@ -247,7 +214,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 keyboardType="numeric"
             />
             {validationErrors[unit.id]?.rooms &&
-                <Text style={styles.errorText}>Number of rooms must be greater than 0.</Text>}
+                <Text style={styles.errorText}>Invalid Rooms</Text>}
 
             <Text style={styles.label}>Description</Text>
             <TextInput
@@ -258,9 +225,9 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 multiline
             />
             {validationErrors[unit.id]?.description &&
-                <Text style={styles.errorText}>Description must be greater than 50 letters</Text>}
+                <Text style={styles.errorText}>Provide description between 30 to 200 characters</Text>}
 
-            <Text style={styles.label}>Bathrooms *</Text>
+            <Text style={styles.label}>Number of Bathrooms *</Text>
             <TextInput
                 style={[styles.input, validationErrors[unit.id]?.bathrooms && styles.errorInput]}
                 placeholder="Enter Number of Bathrooms"
@@ -271,7 +238,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
             {validationErrors[unit.id]?.bathrooms &&
                 <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
 
-            <Text style={styles.label}>Parkings *</Text>
+            <Text style={styles.label}>Number of Parkings *</Text>
             <TextInput
                 style={[styles.input, validationErrors[unit.id]?.parkings && styles.errorInput]}
                 placeholder="Enter Number of Parkings"
@@ -280,10 +247,10 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 keyboardType="numeric"
             />
             {validationErrors[unit.id]?.parkings &&
-                <Text style={styles.errorText}>Number of parkings must be greater than or equal to 0.</Text>}
+                <Text style={styles.errorText}>Invalid Parkings</Text>}
 
             <View style={styles.rowContainer}>
-                <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
+                <View style={styles.inputContainer}><Text style={styles.label}>Available From *</Text>
                     <TouchableOpacity
                         style={[styles.input, styles.datePickerInput]}
                         onPress={() => showDatePicker()}
@@ -299,10 +266,10 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                         value={unit.startDate || new Date()}
                     />}
                     {validationErrors[unit.id]?.startDate &&
-                        <Text style={styles.errorText}>Select Available </Text>}
+                        <Text style={styles.errorText}>Select Available From</Text>}
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Available to *</Text>
+                    <Text style={styles.label}>Available To *</Text>
                     <TouchableOpacity
                         style={[styles.input, styles.datePickerInput]}
                         disabled={true}
@@ -310,7 +277,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                         <Text>{unit.endDate ? unit.endDate.toLocaleDateString() : 'Auto-filled'}</Text>
                     </TouchableOpacity>
                     {validationErrors[unit.id]?.startDate &&
-                        <Text style={styles.errorText}>Select Available date</Text>}
+                        <Text style={styles.errorText}>Select Available From</Text>}
                 </View>
             </View>
 
@@ -336,29 +303,7 @@ const PostUnitForm = ({ onSubmit, onCancel }) => {
                 </View>
             </View>
             {validationErrors[unit.id]?.phone1 &&
-                <Text style={styles.errorText}>At least one phone number is required.</Text>}
-
-            <TouchableOpacity
-                style={styles.button}
-                onPress={()=>pickImage(unit.id)}
-            >
-                <Text style={styles.buttonText}>{`Upload Unit Images`}</Text>
-            </TouchableOpacity>
-
-            <ScrollView horizontal>
-                {unit.images.map((uri, index) => (
-                    <View key={index} style={styles.imageContainer}>
-                        <Image source={{ uri }} style={styles.image} />
-                        <TouchableOpacity
-                            style={styles.removeButton}
-                            onPress={() => removeImage(unit.id, uri)}
-                        >
-                            <FontAwesome name="times-circle" size={30} color="red" />
-                        </TouchableOpacity>
-                    </View>
-                ))}
-            </ScrollView>
-            <Text>You can upload up to {MAX_IMAGES} images.</Text>
+                <Text style={styles.errorText}>Provide one phone number</Text>}
         </View>
     );
 

@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Room from "../screens/rooms/room";
-import Jobs from "../screens/jobs/jobs";
-import MarketPlace from "../screens/marketplace/MarketPlace";
+import Latest from "../screens/jobs/Latest";
 import { Ionicons } from "@expo/vector-icons";
 import * as React from "react";
 import sports from "../screens/sports/Sports";
@@ -16,17 +15,14 @@ const Navbar = () => {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
-
-                    if (route.name === "Rooms") {
+                    if (route.name === "Rooms/Units") {
                         iconName = focused ? "home" : "home-outline";
-                    } else if (route.name === "Jobs") {
-                        iconName = focused ? "briefcase" : "briefcase-outline";
-                    } else if (route.name === "MarketPlace") {
-                        iconName = focused ? "storefront" : "storefront-outline";
-                    } else if (route.name === "Sports") {
-                        iconName = focused ? "trophy" : "trophy-outline";
+                    } else if (route.name === "Latest") {
+                        iconName = focused ? "information-circle" : "information-circle-outline";
                     } else if (route.name === "Profile") {
                         iconName = focused ? "person" : "person-outline";
+                    }else if (route.name === "Sports") {
+                        iconName = focused ? "football" : "football-outline";
                     }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -35,14 +31,13 @@ const Navbar = () => {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Sports" component={Jobs} />
+      <Tab.Screen name="Latest" component={Latest} options={{headerTitle: "Connect Nepal"}} />
       <Tab.Screen
-        name="Rooms"
+        name="Rooms/Units"
         component={Room}
         options={{ headerShown: false }}
       />
-      {/*<Tab.Screen name="MarketPlace" component={MarketPlace} />*/}
-      {/*<Tab.Screen name="Sports" component={sports} />*/}
+      <Tab.Screen name="Sports" component={sports} />
       <Tab.Screen
         name="Profile"
         component={MyProperty}

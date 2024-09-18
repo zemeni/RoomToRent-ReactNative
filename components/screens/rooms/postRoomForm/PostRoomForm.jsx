@@ -1,17 +1,14 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
     FlatList,
-    Image,
     KeyboardAvoidingView,
     Platform,
-    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
-import {FontAwesome} from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import {FontAwesome} from '@expo/vector-icons';;
 import {styles} from "./postRoomForm.style";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -32,8 +29,7 @@ const DEFAULT_ROOM = {
     startDate: '',
     phone1: '',
     phone2: '',
-    gender: 'all',
-    images: []
+    gender: 'all'
 };
 
 const PostRoomForm = ({onSubmit, onCancel}) => {
@@ -42,7 +38,6 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
-    const MAX_IMAGES = 5;
 
     const genderOptions = [
         { key: 'male', label: 'Male' },
@@ -70,20 +65,18 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             case 'address':
                 return value !== '';
             case 'price':
-                return value > 0;
+                return value > 0 && value < 1000;
             case 'description':
-                return value.length > 50;
+                return value.length > 30 && value.length < 200;
             case 'startDate':
                 return value instanceof Date && !isNaN(value.getTime());
             case 'bathrooms':
-                return value > 0;
+                return value > 0 && value < 5;
             case 'parkings':
-                return value >= 0;
+                return value >= 0 && value < 5;
             case 'phone1':
                 const phoneRegex = /^04\d{8}$/;
                 return phoneRegex.test(value);
-            case 'images':
-                return value.length <= MAX_IMAGES;
             default:
                 return true;
         }
@@ -98,7 +91,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
 
         const isFormValid = rooms.length > 0 && rooms.every(room => {
             let isRoomValid = true;
-            ['price', 'description', 'bathrooms', 'parkings', 'startDate', 'images', 'phone1'].forEach(field => {
+            ['price', 'description', 'bathrooms', 'parkings', 'startDate', 'phone1'].forEach(field => {
                 if (!validateField(field, room[field])) {
                     isRoomValid = false;
                     errors[room.id] = errors[room.id] || {};
@@ -159,36 +152,6 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
         }
     };
 
-    const pickImage = async (roomId) => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            const newImages = result.assets.map(asset => asset.uri);
-            const updatedRooms = rooms.map(room => {
-                if (room.id === roomId) {
-                    const limitedImages = [...room.images, ...newImages].slice(0, MAX_IMAGES);
-                    return {...room, images: limitedImages};
-                }
-                return room;
-            });
-            setRooms(updatedRooms);
-        }
-    };
-
-    const removeImage = (roomId, uri) => {
-        const updatedRooms = rooms.map(room => {
-            if (room.id === roomId) {
-                return {...room, images: room.images.filter(image => image !== uri)};
-            }
-            return room;
-        });
-        setRooms(updatedRooms);
-    };
-
     const addRoom = () => {
         const newRoomId = rooms.length + 1;
         const newRoom = {
@@ -204,8 +167,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             startDate: '',
             phone1: '',
             phone2: '',
-            gender: 'all',
-            images: []
+            gender: 'all'
         };
         setRooms([...rooms, newRoom]);
     };
@@ -231,10 +193,9 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
             </TouchableOpacity>
             <Text style={styles.formTitle}>Room {room.id}</Text>
 
-            <Text style={styles.label}>Only for *</Text>
+            <Text style={styles.label}>Only For *</Text>
             <View style={styles.pickerContainer}>
                 <ModalSelector data={genderOptions}
-                               // initValue={genderOptions.find(g => g.key === room.gender)?.label || 'Select gender'}
                                onChange={(option) => handleTextChange(option.key, room.id, 'gender')}
                                >
                     <View style={styles.dropdown}>
@@ -277,7 +238,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 </View>
             </View>
             {validationErrors[room.id]?.price &&
-                <Text style={styles.errorText}>Price must be greater than 0.</Text>}
+                <Text style={styles.errorText}>Invalid price.</Text>}
 
             <View style={styles.rowContainer}>
                 <View style={styles.inputContainer}>
@@ -326,7 +287,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 multiline
             />
             {validationErrors[room.id]?.description &&
-                <Text style={styles.errorText}>Description must be greater than 50 letters</Text>}
+                <Text style={styles.errorText}>Provide description 30 to 200 characters</Text>}
             <Text style={styles.label}>Number of Bathrooms *</Text>
             <TextInput
                 style={[styles.input, validationErrors[room.id]?.bathrooms && styles.errorInput]}
@@ -336,7 +297,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 keyboardType="numeric"
             />
             {validationErrors[room.id]?.bathrooms &&
-                <Text style={styles.errorText}>Number of bathrooms must be greater than 0.</Text>}
+                <Text style={styles.errorText}>Invalid numbers of bathrooms.</Text>}
 
             <Text style={styles.label}>Number of Parking Available *</Text>
             <TextInput
@@ -346,11 +307,9 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 onChangeText={(parkings) => handleNumericChange(parkings, room.id, 'parkings')}
                 keyboardType="numeric"
             />
-            {validationErrors[room.id]?.parkings &&
-                <Text style={styles.errorText}>Number of parking must be 0 or more.</Text>}
 
             <View style={styles.rowContainer}>
-                <View style={styles.inputContainer}><Text style={styles.label}>Available from *</Text>
+                <View style={styles.inputContainer}><Text style={styles.label}>Available From *</Text>
                     <TouchableOpacity
                         style={[styles.input, styles.datePickerInput]}
                         onPress={() => showDatePicker()}
@@ -365,10 +324,10 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                         maximumDate={new Date(Date.now() + 60 *24 *60 *60 *1000)}
                         value={room.startDate || new Date()}/>}
                     {validationErrors[room.id]?.startDate &&
-                        <Text style={styles.errorText}>Select Available </Text>}
+                        <Text style={styles.errorText}>Select Available From</Text>}
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>This post expires on *</Text>
+                    <Text style={styles.label}>This Post Expires On *</Text>
                     <TouchableOpacity
                         style={[styles.input, styles.datePickerInput]}
                         disabled={true}
@@ -376,7 +335,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                         <Text>{room.endDate ? room.endDate.toLocaleDateString() : 'Auto-filled'}</Text>
                     </TouchableOpacity>
                     {validationErrors[room.id]?.startDate &&
-                        <Text style={styles.errorText}>Select Available date</Text>}
+                        <Text style={styles.errorText}>Select Available From</Text>}
                 </View>
             </View>
 
@@ -402,26 +361,7 @@ const PostRoomForm = ({onSubmit, onCancel}) => {
                 </View>
             </View>
             {validationErrors[room.id]?.phone1 &&
-                <Text style={styles.errorText}>At least one phone number is required.</Text>}
-
-            <TouchableOpacity
-                style={[styles.button, styles.uploadImage]}
-                onPress={() => pickImage(room.id)}
-            >
-                <Text style={styles.buttonText}>{`Upload Room Images`}</Text>
-            </TouchableOpacity>
-
-            <ScrollView horizontal style={styles.imagePreviewContainer}>
-                {room.images.map((uri) => (
-                    <View key={uri} style={styles.imagePreview}>
-                        <Image source={{uri}} style={styles.image}/>
-                        <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(room.id, uri)}>
-                            <FontAwesome name="times-circle" size={24} color="red"/>
-                        </TouchableOpacity>
-                    </View>
-                ))}
-            </ScrollView>
-            <Text>You can upload up to {MAX_IMAGES} images.</Text>
+                <Text style={styles.errorText}>Provide one phone number</Text>}
         </View>
     );
 
