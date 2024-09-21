@@ -7,6 +7,7 @@ import Toast from "react-native-toast-message";
 import {styles} from "./login.style";
 
 const LoginScreen = () => {
+    console.log("I am inside login screen");
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isValid, setIsValid] = useState(false);
@@ -14,23 +15,6 @@ const LoginScreen = () => {
     const navigation = useNavigation();
     const { login, user } = useContext(AuthContext);
 
-    useEffect(() => {
-        validateForm();
-    }, [username, password]);
-
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!username) {
-            newErrors.username = 'Please enter a valid email';
-        }
-
-        if (password.length < 5) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        setIsValid(Object.keys(newErrors).length === 0);
-    };
 
     useFocusEffect(
         React.useCallback(() => {
@@ -80,9 +64,8 @@ const LoginScreen = () => {
                     secureTextEntry
                 />
                 <TouchableOpacity
-                    style={[styles.button, !isValid && styles.buttonDisabled]}
+                    style={[styles.button]}
                     onPress={handleLogin}
-                    disabled={!isValid}
                 >
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>

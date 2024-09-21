@@ -1,13 +1,13 @@
 import {Text, View, StyleSheet, Button, SafeAreaView} from "react-native";
-import {styles} from "./Sports.style";
+import {styles} from "./social.style";
 import ModalSelector from "react-native-modal-selector";
 import Icon from "react-native-vector-icons/Ionicons";
 import React, {useContext, useMemo, useState} from "react";
 import countriesStates from '../../../assets/countriesStates.json'
 import {AuthContext} from "../../auth/AuthContext";
 
-const Sports = () => {
-    console.log("I am inside the Sports page");
+const Social = () => {
+    console.log("I am inside the social page");
     const { user } = useContext(AuthContext);
 
 
@@ -32,9 +32,9 @@ const Sports = () => {
                 </ModalSelector>
             </View>
 
-            <Text>You will see sports happening in {state}</Text>
+            <Text>You will see social events happening in {state}</Text>
         </SafeAreaView>
     );
 };
 
-export default Sports;
+export default Social;

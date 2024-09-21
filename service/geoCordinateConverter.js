@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const getCoordinatesFromAddress = async (address) => {
-   const apiKey = '';
+   const apiKey = 'AIzaSyCUD4zx3oDyTCAISXtANyF-j8s2ayPHfSs';
    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
   try {

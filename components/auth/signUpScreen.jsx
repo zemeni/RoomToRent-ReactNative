@@ -10,6 +10,7 @@ import ModalSelector from "react-native-modal-selector";
 import countriesStates from '../../assets/countriesStates.json'; // Importing the JSON file
 
 const SignUpScreen = () => {
+    console.log("I am inside signup screen");
     const { signUp } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,7 +26,6 @@ const SignUpScreen = () => {
     const route = useRoute();
     const fromScreen = route.params?.fromScreen || 'MyProfile';
 
-    // Extract country and state data from the JSON file
     const countryOptions = countriesStates.countries.map(country => ({
         key: country.key,
         label: country.label
@@ -36,18 +36,16 @@ const SignUpScreen = () => {
         return selectedCountry ? selectedCountry.states : [];
     };
 
-    // Update state options based on the selected country
     useEffect(() => {
         if (country === 'AUS') {
-            setState('NSW'); // Default state for Australia
+            setState('NSW');
         } else if (country === 'CAN') {
-            setState('ON');  // Default state for Canada (Ontario)
+            setState('ON');
         } else if (country === 'USA') {
-            setState('CA');  // Default state for USA (California)
+            setState('CA');
         }
     }, [country]);
 
-    // Validate the form when inputs change
     useEffect(() => {
         validateForm();
     }, [email, password, confirmPassword, firstname, lastname, phone]);

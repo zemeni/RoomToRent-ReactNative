@@ -33,8 +33,8 @@ const MyProperty = () => {
         }, [])
     );
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        await logout();  // First, log the user out
     }
 
 
