@@ -49,6 +49,7 @@ export const styles = StyleSheet.create({
     },
     cardText: {
         fontSize: 14,
+        fontWeight: "bold",
         color: '#333',
         lineHeight: 20,  // For better readability
         textAlign: 'justify',  // Justify the text for a cleaner look
