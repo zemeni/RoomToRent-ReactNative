@@ -1,10 +1,11 @@
-import {Text, View, Image, SafeAreaView, Button, ScrollView, TouchableOpacity, Linking} from "react-native";;
+import { Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, Linking } from "react-native";
 import ModalSelector from "react-native-modal-selector";
 import Icon from "react-native-vector-icons/Ionicons";
-import React, { useContext, useMemo, useState } from "react";
+import React, {useContext, useEffect, useMemo, useState} from "react";
 import countriesStates from "../../../assets/countriesStates.json";
 import { AuthContext } from "../../auth/AuthContext";
 import { styles } from "./Sports.style";
+import axios from "axios";
 
 const Sports = () => {
     console.log("I am inside the Sports page");
@@ -18,50 +19,61 @@ const Sports = () => {
     const defaultState = useMemo(() => country.states.find(s => s.key === userStateKey), [country, userStateKey]);
 
     const [state, setState] = useState(defaultState.key);
+    const [sports, setSports] = useState([]);
 
-    const sportsClubs = [
-        {
-            id: 1,
-            title: "Cricket Club",
-            imageUrl: "https://room-to-rent.s3.ap-southeast-2.amazonaws.com/redrhino.png",
-            description: "Join our local football club and enjoy weekend matches! Join our local football club and enjoy weekend matches! Join our local football club and enjoy weekend matches!",
-            buttonText: "Join Now",
-            facebookLink: "https://www.facebook.com/redrhinoscc"
-        },
-        {
-            id: 2,
-            title: "Football Club",
-            imageUrl: "https://room-to-rent.s3.ap-southeast-2.amazonaws.com/8848_football",
-            description: "Love basketball? Become a part of our active basketball community.",
-            buttonText: "Sign Up",
-            facebookLink: "https://www.facebook.com/8848RoyalsFC"
-        },
-        {
-            id: 3,
-            title: "Swimming Club",
-            imageUrl: "https://room-to-rent.s3.ap-southeast-2.amazonaws.com/redrhino.png",
-            description: "Dive into fun with our swimming club! All skill levels welcome.",
-            buttonText: "Get Started",
-        }
-    ];
+    const DescriptionSection = ({ description }) => {
+        const [isExpanded, setIsExpanded] = useState(false);
+
+        const toggleDescription = () => {
+            setIsExpanded(!isExpanded);
+        };
+
+        const renderDescription = () => {
+            if (isExpanded || description.length <= 100) {
+                return <Text style={styles.cardText}>{description}</Text>;
+            } else {
+                return (
+                    <Text style={styles.cardText}>
+                        {description.substring(0, 100)}...
+                        <TouchableOpacity onPress={toggleDescription}>
+                            <Text style={{ color: 'blue' }}> See More</Text>
+                        </TouchableOpacity>
+                    </Text>
+                );
+            }
+        };
+
+        return <View>{renderDescription()}</View>;
+    };
 
     const openFacebookLink = async (url) => {
-        const facebookAppUrl = `fb://facewebmodal/f?href=${url}`;  // Facebook URL scheme to open in the app
+        const facebookAppUrl = `fb://facewebmodal/f?href=${url}`;
 
         try {
-            // Check if Facebook app is installed
             const supported = await Linking.canOpenURL(facebookAppUrl);
             if (supported) {
-                // Open in Facebook app
                 await Linking.openURL(facebookAppUrl);
             } else {
-                // Fallback to browser if Facebook app is not installed
                 await Linking.openURL(url);
             }
         } catch (error) {
             console.error("Failed to open URL:", error);
         }
     };
+
+    useEffect(() => {
+        const fetchSports = async () => {
+            try {
+                const response = await axios.get(`http://192.168.1.108:4000/api/sports?state=${state}`);
+                setSports(response.data);
+            } catch (error) {
+                console.log("An error has occurred:", error);
+            }
+        };
+
+        fetchSports();
+    }, [state]);
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -78,15 +90,15 @@ const Sports = () => {
                 </View>
 
                 <View style={styles.cardsContainer}>
-                    {sportsClubs.map((club) => (
-                        <View key={club.id} style={styles.card}>
-                            <Image source={{ uri: club.imageUrl }} style={styles.cardImage} />
+                    {sports.map((club) => (
+                        <View key={club.sportsid} style={styles.card}>
+                            <Image source={{ uri: club.imageurl }} style={styles.cardImage} />
                             <View style={styles.cardBody}>
                                 <Text style={styles.cardTitle}>{club.title}</Text>
-                                <Text style={styles.cardText}>{club.description}</Text>
+                                <DescriptionSection description={club.description} />
                                 <TouchableOpacity
                                     style={styles.cardButton}
-                                    onPress={() => openFacebookLink(club.facebookLink)}
+                                    onPress={() => openFacebookLink(club.facebooklink)}
                                 >
                                     <Text style={styles.cardButtonText}>Visit on Facebook</Text>
                                 </TouchableOpacity>
