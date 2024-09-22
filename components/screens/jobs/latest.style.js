@@ -55,7 +55,6 @@ export const styles = StyleSheet.create({
     },
     videoContainer: {
         height: 200,  // Fixed height for the video container
-        // borderTopWidth: 1,
         borderColor: 'gray',
     },
     webview: {
