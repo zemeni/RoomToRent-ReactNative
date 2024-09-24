@@ -1,6 +1,6 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import Room from "../screens/rooms/room";
-import Latest from "../screens/jobs/Latest";
+import Latest from "../screens/latest/Latest";
 import {Ionicons} from "@expo/vector-icons";
 import * as React from "react";
 import sports from "../screens/sports/Sports";
@@ -28,8 +28,6 @@ const Navbar = () => {
     if (!user) {
         return null;
     }
-
-    console.log("I am still inside navbar page");
 
     return (
         <Tab.Navigator

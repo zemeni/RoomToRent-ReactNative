@@ -10,7 +10,6 @@ import ModalSelector from "react-native-modal-selector";
 import countriesStates from '../../assets/countriesStates.json'; // Importing the JSON file
 
 const SignUpScreen = () => {
-    console.log("I am inside signup screen");
     const { signUp } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

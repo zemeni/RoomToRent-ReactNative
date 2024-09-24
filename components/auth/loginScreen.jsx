@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, Button, Alert, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {View, Text, Alert, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native';
 import { TextInput } from 'react-native-paper';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import { AuthContext } from './AuthContext';
@@ -7,13 +7,11 @@ import Toast from "react-native-toast-message";
 import {styles} from "./login.style";
 
 const LoginScreen = () => {
-    console.log("I am inside login screen");
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [isValid, setIsValid] = useState(false);
     const [loading, setLoading] = useState(false); // State for loading indicator
     const navigation = useNavigation();
-    const { login, user } = useContext(AuthContext);
+    const { login} = useContext(AuthContext);
 
 
     useFocusEffect(

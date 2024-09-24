@@ -65,7 +65,6 @@ const Latest = () => {
                         if (info.type === 'youtube' || info.type === 'facebook') {
                             videoHTML = `${info.videourl}`;
                         } else if (info.type === 'tiktok') {
-                            const tiktokUrl = generateTikTokUrl(7172526068522306843);
                             videoHTML = `<iframe 
                                 height="100%" 
                                 width="100%" 
