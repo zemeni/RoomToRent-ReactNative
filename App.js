@@ -21,6 +21,8 @@ const Stack = createStackNavigator();
 function AppNavigator() {
     const { user } = useContext(AuthContext);
 
+    console.log("I am still inside App page");
+
     return (
         <Stack.Navigator>
             {user ? (

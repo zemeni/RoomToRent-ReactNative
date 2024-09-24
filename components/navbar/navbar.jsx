@@ -29,6 +29,8 @@ const Navbar = () => {
         return null;
     }
 
+    console.log("I am still inside navbar page");
+
     return (
         <Tab.Navigator
             screenOptions={({route}) => ({

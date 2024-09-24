@@ -36,7 +36,11 @@ const LoginScreen = () => {
                 text2: 'Explore RoomToRent',
                 visibilityTime: 3000,
             });
-            navigation.navigate('Main');
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Main' }],
+            });
         } else {
             Alert.alert('Login failed', 'Invalid username or password');
         }
