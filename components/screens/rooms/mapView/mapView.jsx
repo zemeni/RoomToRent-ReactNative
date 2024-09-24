@@ -1,21 +1,20 @@
 import React, {useState, useRef, useContext, useEffect} from 'react';
-import {View, TouchableOpacity, Text, Modal, Dimensions} from 'react-native';
-import MapView, {Circle, Marker} from 'react-native-maps';
-import {FontAwesome, MaterialIcons, FontAwesome5, FontAwesome6} from '@expo/vector-icons'; // Import icons
+import {View, TouchableOpacity, Text, Modal} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
+import {FontAwesome, FontAwesome5} from '@expo/vector-icons';
 import {styles} from './mapView.style';
-
 import {AuthContext} from '../../../auth/AuthContext';
 import {useNavigation} from '@react-navigation/native';
 import PostForm from "../postForm/postForm";
 import Toast from "react-native-toast-message";
 import CustomMarker from "./customMarker";
-
+import { Ionicons } from '@expo/vector-icons';
 
 const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
-    const [mapType, setMapType] = useState('standard'); // Default map type
+    const [mapType, setMapType] = useState('standard');
     const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isMapTypeModalVisible, setIsMapTypeModalVisible] = useState(false);
     const mapRef = useRef(null);
-
     const {user} = useContext(AuthContext);
     const navigation = useNavigation();
 
@@ -41,10 +40,6 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
         }
     };
 
-    const toggleMapType = (type) => {
-        setMapType(type);
-    };
-
     const handlePostRoom = () => {
         if (!user) {
             navigation.navigate('Login');
@@ -54,9 +49,7 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
     };
 
     const handleFormSubmit = async (formData) => {
-        console.log('Form Data:', formData);
         setIsFormVisible(false);
-        console.log("token is ", user.token);
         try {
             const response = await fetch('http://192.168.1.108:4000/api/property', {
                 method: 'POST',
@@ -67,12 +60,7 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
                 body: JSON.stringify(formData),
             });
 
-            const data = await response.json();
-
-            console.log("response is ", data);
-
             if (!response.ok) {
-                console.error("Server error:", data.message || response.statusText);
                 return false;
             }
 
@@ -88,12 +76,11 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
             }
             return true;
         } catch (error) {
-            console.error('Signup error:', error);
             Toast.show({
                 type: 'error',
                 position: 'top',
                 text1: 'Server Error',
-                text2: 'Try again next time',
+                text2: 'Try again later',
                 visibilityTime: 5000,
             });
             return false;
@@ -105,12 +92,19 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
     };
 
     const handleMarkerPress = (marker) => {
-        console.log("passing this marker to MarkerDetailsPage::", marker);
-        navigation.navigate('MarkerDetailsPage', {propertyId: marker.id, type:marker.type})
-    }
+        navigation.navigate('MarkerDetailsPage', {propertyId: marker.id, type: marker.type});
+    };
 
+    // Toggle map type modal visibility
+    const toggleMapTypeModal = () => {
+        setIsMapTypeModalVisible(!isMapTypeModalVisible);
+    };
 
-    console.log("rendering map view page");
+    // Set the map type and close the modal
+    const selectMapType = (type) => {
+        setMapType(type);
+        setIsMapTypeModalVisible(false);
+    };
 
     return (
         <View style={styles.container}>
@@ -125,7 +119,7 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
                 } : null}
                 showsUserLocation={true}
                 showsMyLocationButton={false}
-                mapType={mapType === 'standard' ? 'standard' : mapType === 'satellite' ? 'satellite' : 'hybrid'}
+                mapType={mapType}
             >
                 {markers.map(marker => (
                     <Marker
@@ -137,25 +131,63 @@ const MapViewTab = ({markers, mapLocation, userLocation, fetchRoomData}) => {
                     </Marker>
                 ))}
             </MapView>
+
+            {/* Single button for map type modal */}
             <View style={styles.topRight}>
-                <TouchableOpacity onPress={() => toggleMapType('standard')} style={styles.mapTypeButton}>
-                    <FontAwesome name="street-view" size={24} color={mapType === 'standard' ? '#b305ed' : '#0533ed'}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => toggleMapType('satellite')} style={styles.mapTypeButton}>
-                    <MaterialIcons name="satellite" size={24} color={mapType === 'satellite' ? '#b305ed' : '#0533ed'}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => toggleMapType('hybrid')} style={styles.mapTypeButton}>
-                    <FontAwesome5 name="map-marked" size={24} color={mapType === 'hybrid' ? '#b305ed' : '#0533ed'}/>
+                <TouchableOpacity onPress={toggleMapTypeModal} style={styles.mapTypeButton}>
+                    <FontAwesome name="map" size={24} color="#0533ed"/>
                 </TouchableOpacity>
             </View>
+
+            {/* Modal for map type selection */}
+            <Modal
+                visible={isMapTypeModalVisible}
+                transparent={true}
+                animationType="slide"
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity onPress={() => selectMapType('standard')}>
+                            <View style={styles.mapTypeOption}>
+                                <Ionicons name="map-outline" size={24} color="#1c3fcc" />
+                                <Text style={styles.mapTypeText}>Standard</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => selectMapType('satellite')}>
+                            <View style={styles.mapTypeOption}>
+                                <Ionicons name="planet-outline" size={24} color="#1c3fcc" />
+                                <Text style={styles.mapTypeText}>Satellite</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => selectMapType('hybrid')}>
+                            <View style={styles.mapTypeOption}>
+                                <Ionicons name="layers-outline" size={24} color="#1c3fcc" />
+                                <Text style={styles.mapTypeText}>Hybrid</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={toggleMapTypeModal}>
+                            <View style={styles.mapTypeOption}>
+                                <Ionicons name="close-circle-outline" size={24} color="red" />
+                                <Text style={styles.mapTypeCancel}>Cancel</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Reset to current location button */}
             <View style={styles.bottomRight}>
                 <TouchableOpacity style={styles.resetButton} onPress={resetToCurrentLocation}>
-                    <FontAwesome6 name="location-crosshairs" size={30} color="#3e5dd8"/>
+                    <FontAwesome5 name="location-arrow" size={30} color="#3e5dd8"/>
                 </TouchableOpacity>
             </View>
+
+            {/* Post Room/Units Button */}
             <TouchableOpacity style={styles.postButton} onPress={handlePostRoom}>
                 <Text style={styles.postButtonText}>Post Room/Units</Text>
             </TouchableOpacity>
+
+            {/* Form Modal */}
             <Modal visible={isFormVisible} animationType="slide">
                 <PostForm onSubmit={handleFormSubmit} onCancel={handleFormCancel}/>
             </Modal>

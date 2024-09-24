@@ -4,65 +4,74 @@ const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
     container: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        flex: 1,
     },
     map: {
         ...StyleSheet.absoluteFillObject,
     },
     topRight: {
         position: 'absolute',
-        top: 20, // Adjust as needed to position from the top
+        bottom: 100,
         right: 10,
-        flexDirection: 'column',
-        alignItems: 'flex-end',
+        zIndex: 1,
+    },
+    mapTypeButton: {
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: 50,
+        elevation: 5,
     },
     bottomRight: {
         position: 'absolute',
-        bottom: 80, // Adjust as needed to position from the bottom
+        bottom: 20,
         right: 10,
-    },
-    mapTypeButton: {
-        padding: 10,
     },
     resetButton: {
         backgroundColor: 'white',
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 50,
+        elevation: 5,
     },
     postButton: {
         position: 'absolute',
-        top: 50,
-        left: 20,
-        backgroundColor: '#496ec1',
-        padding: 10,
-        borderRadius: 5,
+        top: 20,
+        left: 10,
+        backgroundColor: '#ff5722',
+        padding: 15,
+        borderRadius: 10,
     },
     postButtonText: {
         color: 'white',
         fontSize: 16,
-    },
-    sliderContainer: {
-        display: 'flex',
-        flexDirection: "row",
-        width: '100%',
-        height: 50,
-        justifyContent: 'space-around',
-        backgroundColor: "#adc3c3",
-        bottom: 15
-    },
-    slider: {
-        width: width * 0.7,
-    },
-    searchButton: {
-        backgroundColor: '#3168d6',
-        borderRadius: 10,
-        padding: 5,
-    },
-    searchButtonText: {
-        color: 'white',
-        fontSize: 16,
         fontWeight: 'bold',
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark transparent background
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
+    mapTypeText: {
+        fontSize: 18,
+        paddingVertical: 10,
+        color: "#1c3fcc"
+    },
+    mapTypeCancel: {
+        fontSize: 18,
+        paddingVertical: 10,
+        color: 'red',
+    },
+    mapTypeOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        width: '100%',
+        justifyContent: 'flex-start',
     },
 });

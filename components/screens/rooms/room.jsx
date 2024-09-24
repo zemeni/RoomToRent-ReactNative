@@ -17,7 +17,6 @@ const TopTab = createMaterialTopTabNavigator();
 const Room = () => {
     const { user } = useContext(AuthContext);
 
-    // If user is null, the page should not continue rendering
     if (!user || !user.userProfile) {
         return (
             <SafeAreaView style={styles.safeArea}>
@@ -96,7 +95,6 @@ const Room = () => {
         });
     }, [country.states]);
 
-    console.log("rendering room page and markers size is ", markers.length);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -111,8 +109,8 @@ const Room = () => {
             </View>
 
             <TopTab.Navigator
-            screenOptions={{unmountOnBlur: false, lazy: true
-            }}
+                screenOptions={{unmountOnBlur: false, lazy: true
+                }}
             >
                 <TopTab.Screen name="Map" >
                     {props => <MapViewTab {...props} markers={markers} mapLocation={mapLocation} userLocation={userLocation}  fetchRoomData={() => fetchRoomData(state)}/>}

@@ -7,8 +7,6 @@ const ListView = ({markers}) => {
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
-    console.log("markers in list view ", markers.length);
-
     useEffect(() => {
         if (markers.length > 0) {
             const mappedRooms = markers.map(marker => ({
@@ -23,7 +21,7 @@ const ListView = ({markers}) => {
             setRooms([]);
         }
         setLoading(false);
-    }, []);
+    }, [markers]);
 
 
     const handlePress = (item) => {
