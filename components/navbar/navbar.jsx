@@ -42,7 +42,7 @@ const Navbar = () => {
                         iconName = focused ? "person" : "person-outline";
                     } else if (route.name === "Sports") {
                         iconName = focused ? "football" : "football-outline";
-                    } else if (route.name === "Social") {
+                    } else if (route.name === "Events") {
                         iconName = focused ? "people" : "people-outline";
                     }
 
@@ -65,7 +65,7 @@ const Navbar = () => {
             <Tab.Screen name="Sports" component={sports}
                         options={{headerShown: false}}
             />
-            <Tab.Screen name="Social" component={Social}
+            <Tab.Screen name="Events" component={Social}
                         options={{headerShown: false}}
             />
             <Tab.Screen

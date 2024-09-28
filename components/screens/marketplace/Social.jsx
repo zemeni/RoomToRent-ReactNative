@@ -129,7 +129,7 @@ const Social = () => {
                                     style={styles.cardButton}
                                     onPress={() => openFacebookLink(social.facebookLink)}
                                 >
-                                    <Text style={styles.cardButtonText}>Visit on Facebook</Text>
+                                    <Text style={styles.cardButtonText}>Buy Tickets Here</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
